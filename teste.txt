@@ -1,0 +1,59 @@
+# import pygame
+# from pygame.locals import *
+# from sys import exit
+
+# pygame.init()
+
+# largura = 1000
+# altura = 700
+# tela = pygame.display.set_mode((largura, altura))
+
+# pygame.display.set_caption('PoliGame')
+# while True:
+#     for event in pygame.event.get():
+#         if event.type == QUIT:
+#             pygame.quit()
+#             exit()
+
+#     pygame.display.update()
+
+import pygame
+
+pygame.init()
+tela = pygame.display.set_mode((800, 600))
+fonte = pygame.font.Font(None, 40)  # Você pode usar uma fonte pixel se tiver
+
+def desenhar_botao(tela, texto, x, y, largura, altura):
+    cor_fundo = (0, 200, 255)      # Azul claro
+    cor_sombra = (0, 100, 150)     # Azul escuro (sombra)
+    cor_borda = (0, 0, 0)          # Preto (contorno)
+    cor_texto = (255, 255, 255)    # Branco
+
+    # Sombra (para dar efeito de relevo)
+    pygame.draw.rect(tela, cor_sombra, (x + 5, y + 5, largura, altura))
+
+    # Botão principal
+    pygame.draw.rect(tela, cor_fundo, (x, y, largura, altura))
+
+    # Contorno preto
+    pygame.draw.rect(tela, cor_borda, (x, y, largura, altura), 3)
+
+    # Texto centralizado
+    texto_render = fonte.render(texto, True, cor_texto)
+    texto_rect = texto_render.get_rect(center=(x + largura // 2, y + altura // 2))
+    tela.blit(texto_render, texto_rect)
+
+# Loop principal
+rodando = True
+while rodando:
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            rodando = False
+
+    tela.fill((255, 222, 0))  # Fundo amarelo (como na sua imagem)
+
+    desenhar_botao(tela, "Começar", 300, 250, 200, 60)
+
+    pygame.display.flip()
+
+pygame.quit()
