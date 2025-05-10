@@ -1,8 +1,8 @@
 import pygame
 from pygame.locals import *
 from sys import exit
-import Constantes
-import Botao
+import Constantes 
+import Botao as Botao
 
 
 
