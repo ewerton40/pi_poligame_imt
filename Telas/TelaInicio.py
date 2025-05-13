@@ -1,24 +1,13 @@
 import pygame
-# from .TelaAdmin import TelaAdmin
+
 from Telas.Tela import Tela
 import sys
 from sys import exit
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import Constantes 
-from Botao import Botao
-
-# Mock simples para teste (apenas para evitar erro)
-class TelaAdmin:
-    def __init__(self, screen, transition_call):
-        self.screen = screen
-        self.transition_call = transition_call
-    
-    def run(self):
-        self.screen.fill((255, 0, 0))  # Tela vermelha só para teste
-        fonte = pygame.font.SysFont("Arial", 36)
-        texto = fonte.render("Tela Admin", True, (255, 255, 255))
-        self.screen.blit(texto, (200, 200))
+from Botao import Botao 
+from Telas.TelaEscolha import TelaEscolha
 
 class TelaInicio(Tela):
     def __init__(self, screen, transition_call, quit_game):
@@ -54,7 +43,7 @@ class TelaInicio(Tela):
 
             self.jogar.draw(self.screen)
             if self.jogar.check_button():
-                self.transition_call(TelaAdmin(self.screen, self.transition_call)) #Se o botão jogar for pressionado, muda para a tela de jogo
+                self.transition_call(TelaEscolha(self.screen, self.transition_call)) #Se o botão jogar for pressionado, muda para a tela de jogo
 
            
 
