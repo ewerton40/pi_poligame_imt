@@ -5,9 +5,6 @@ import sys
 import Constantes
 import sys    
 from  Telas import TelaAdmin
-
-import sys
-from pathlib import Path
 from Botao import Botao
 
 class TelaLogin:
@@ -26,7 +23,7 @@ class TelaLogin:
         
         # Elementos da interface
         self.botao_entrar = Botao(
-            (Constantes.largura//2 - 100, 300), 
+            (Constantes.largura//2 - -375, 550), 
             (200, 50), 
             pygame.Color("dodgerblue"), 
             "Entrar", 
@@ -36,14 +33,14 @@ class TelaLogin:
         # Campos de entrada
         self.campos = {
             "usuario": {
-                "retangulo": pygame.Rect(Constantes.largura//2 - 150, 200, 300, 40),
+                "retangulo": pygame.Rect(Constantes.largura//2 - -350, 435, 500, 40),
                 "texto": "",
                 "ativo": False,
                 "rotulo": "Usuário:",
                 "senha": False
             },
             "senha": {
-                "retangulo": pygame.Rect(Constantes.largura//2 - 150, 250, 300, 40),
+                "retangulo": pygame.Rect(Constantes.largura//2 - -350, 500, 500, 40),
                 "texto": "",
                 "ativo": False,
                 "rotulo": "Senha:",
@@ -60,7 +57,7 @@ class TelaLogin:
     
     def load(self):
         self.images = {
-            "background": pygame.image.load("imagens/tela_login.jpeg").convert(),  
+            "background": pygame.image.load("imagens/tela_login.png").convert(),  
         }
 
         self.is_loaded = all(image is not None for image in self.images.values())
@@ -69,7 +66,7 @@ class TelaLogin:
         if self.is_loaded:
 
             self.screen.fill(self.cor_fundo)
-            self.screen.blit(self.images["background"])
+            self.screen.blit(self.images["background"], (0, 0))
         
             # Renderiza título e subtítulo
             self.renderizar_titulo()
