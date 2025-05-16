@@ -68,8 +68,8 @@ class TelaLogin:
             self.screen.fill(self.cor_fundo)
             self.screen.blit(self.images["background"], (0, 0))
         
-            # Renderiza título e subtítulo
-            self.renderizar_titulo()
+            # # Renderiza título e subtítulo
+            # self.renderizar_titulo()
         
             # Desenha campos de entrada
             for campo in self.campos.values():
@@ -85,13 +85,6 @@ class TelaLogin:
             # Verifica ação do botão
             if self.botao_entrar.check_button():
              self.verificar_login()
-    
-    def renderizar_titulo(self):
-        titulo = self.fonte_titulo.render("Policáro", True, self.cor_titulo)
-        subtitulo = self.fonte_colegio.render("Colégio", True, self.cor_titulo)
-        
-        self.screen.blit(titulo, (Constantes.largura//2 - titulo.get_width()//2, 80))
-        self.screen.blit(subtitulo, (Constantes.largura//2 - subtitulo.get_width()//2, 130))
     
     def desenhar_campo(self, campo):
         # Fundo do campo
