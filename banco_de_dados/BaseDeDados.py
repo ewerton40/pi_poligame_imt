@@ -10,7 +10,7 @@ class BaseDeDados():
         self.host =os.getenv("HOST")
         self.user = os.getenv("USER")
         self.password = os.getenv("PASSWORD")
-        self.database = os.getenv("DATABASE")
+        self.database = os.getenv("DATABASE")  
         self.port = os.getenv("PORT")
 
         # Tenta fazer a conexão com o banco de dados.
@@ -53,48 +53,118 @@ class BaseDeDados():
         except Exception as e:
             print(e)
 
-     # Pega e retorna todos os usuários do banco de dados.
-    def get_all_users(self):
-        try:
-            sql = ("SELECT Aluno.EmailAluno, role_name FROM tb_role INNER JOIN tb_user ON tb_user.role_id = tb_role.role_id WHERE role_name != 'Admin'")
-            self.cursor.execute(sql)
-            users = self.cursor.fetchall()
-            self.conexao.commit()
-            return users
-        except Exception as e:
-            print(e)
-
         # Adiciona um usuário ao banco de dados.
-    def add_user(self, email:str, password:str, role:str):
+    def add_aluno(self, nome:str, email:str, password:str):
         try:
-            sql = ("INSERT INTO tb_user (user_email, user_password, role_id) SELECT '%s', '%s', role_id FROM tb_role WHERE tb_role.role_name = '%s'" % (email, password, role))
+            sql = ("INSERT INTO Aluno (NomeAluno, EmailAluno, SenhaAluno) VALUES (%s, %s, %s)" % (nome, email, password))
             self.cursor.execute(sql)
             self.conexao.commit()
         except Exception as e:
             print(e)
 
     # Atualiza um usuário no banco de dados.
-    def update_user(self, email:str, password:str, role:str):
+    def update_aluno(self, nome:str, email:str, password:str):
         try:
-            if (email and password and role):
-                sql = ("UPDATE tb_user JOIN tb_role ON tb_role.role_name = '%s' SET tb_user.user_email = '%s', tb_user.user_password = '%s', tb_user.role_id = tb_role.role_id WHERE tb_user.user_email = '%s'" % (role, email, password, email))
-                self.cursor.execute(sql)
-                self.conexao.commit()
-            elif (email and role):
-                sql = ("UPDATE tb_user JOIN tb_role ON tb_role.role_name = '%s' SET tb_user.user_email = '%s', tb_user.role_id = tb_role.role_id WHERE tb_user.user_email = '%s'" % (role, email, email))
+                sql = ("UPDATE Aluno SET NomeAluno= %s, EmailAluno=%s, SenhaAluno=%s" % (nome, email, password))
                 self.cursor.execute(sql)
                 self.conexao.commit()
         except Exception as e:
             print(e)
 
     # Deleta um usuário do banco de dados.
-    def delete_user(self, email:str):
+    def delete_aluno(self, email:str):
         try:
-            sql = ("DELETE FROM tb_user WHERE user_email = '%s'" % email)
+            sql = ("DELETE FROM Aluno WHERE EmailAluno = '%s'" % email)
             self.cursor.execute(sql)
             self.conexao.commit()
         except Exception as e:
             print(e)
+
+    def get_all_questions_json(self) -> str:
+        try:
+            """
+                Create an sql query that returns all questions and their answers like this:
+                {
+                    "id": 0,
+                    "question": "Qual dessas opções é um tópico que deve ser abordado no parágrafo introdutório de redação modelo ENEM?",
+                    "answers": [
+                    {
+                        "id": 0,
+                        "text": "Repertório de abertura",
+                        "correct": true
+                    },
+                    {
+                        "id": 1,
+                        "text": "Tese",
+                        "correct": false
+                    },
+                    {
+                        "id": 2,
+                        "text": "Conclusão do texto",
+                        "correct": false
+                    },
+                    {
+                        "id": 3,
+                        "text": "Argumentação detalhada",
+                        "correct": false
+                    }
+                    ]
+                },
+            """
+            sql = ("""
+                SELECT
+                    p.idPerguntas AS question_id,
+                    p.Enunciado AS question_text,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'answer_id', r.idRespostas,
+                            'answer_text', r.TextoResposta,
+                            'is_true', pr.Correta
+                        )
+                    ) AS answers
+                FROM Perguntas p
+                JOIN Pergunta_Resposta pr ON p.idPerguntas = pr.Perguntas_idPerguntas
+                JOIN Respostas r ON pr.Respostas_idRespostas = r.idRespostas
+                GROUP BY p.idPerguntas
+            """)
+
+            self.cursor.execute(sql)
+            questions = self.cursor.fetchall()
+            self.conexao.commit()
+            questions_json = []
+            for question in questions:
+                question_dict = {
+                    "id": question[0],
+                    "question": question[1],
+                    "answers": []
+                }
+                answers = json.loads(question[2])
+                for answer in answers:
+                    answer_dict = {
+                        "id": answer["answer_id"],
+                        "text": answer["answer_text"],
+                        "correct": answer["is_true"]
+                    }
+                    question_dict["answers"].append(answer_dict)
+                questions_json.append(question_dict)
+
+            return json.dumps(questions_json)
+        except Exception as e:
+            print(e)
+            return "Error ao buscar perguntas!"
+    
+     # Adiciona uma questão ao banco de dados.
+    def add_questao(self, questao:str, alter1:str, alter2:str, alter3:str, answer:str):
+        try:
+            self.cursor.execute("INSERT INTO Pergunta (Enunciado) SELECT '%s'" % (questao))
+            question_id = self.cursor.lastrowid
+            self.cursor.executemany("INSERT INTO Respostas (answer_text, is_true, question_id) VALUES (%s, %s, %s)", [(alter1, 0, question_id), (alter2, 0, question_id), (alter3, 0, question_id), (answer, 1, question_id)])
+            self.conexao.commit()
+            print("Questão adicionada!")
+        except Exception as e:
+            print(e)
+
+            
 
     
     
