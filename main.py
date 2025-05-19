@@ -1,42 +1,92 @@
-# main.py
 import pygame
-from Telas.TelaAcerto import TelaAcerto
+from Telas.TelaErro import TelaErro
+import Botao
 import Constantes
 
 def transition_function():
-    print("Voltando à tela inicial!")
+    print("Voltando ao jogo!")
 
-pygame.init()
-screen = pygame.display.set_mode((Constantes.largura, Constantes.altura))
-pygame.display.set_caption("Tela de Acerto")
+def run_game():
+    pygame.init()
+    screen = pygame.display.set_mode((Constantes.largura, Constantes.altura))
+    pygame.display.set_caption("Show do Milhão")
+    tela_erro = TelaErro(screen, transition_function)
+    resposta_correta = False  # Simulando uma resposta errada
+    tela_erro.atualizar_pontuacao(resposta_correta)
+    tela_erro.exibir_tela_erro()
+    tela_erro.salvar_pontuacao()
+    pygame.quit()
 
-tela_acerto = TelaAcerto(screen, transition_function)
-
-running = True
-clock = pygame.time.Clock()
-
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-
-    tela_acerto.atualizar_pontuacao()
-    tela_acerto.draw()
-
-    pygame.display.flip()
-    clock.tick(60)
-
-pygame.quit()
+if __name__ == "__main__":
+    run_game()
 
 
 
+# import pygame
+# from Telas.TelaErro import TelaErro
+# import Botao
+# import Constantes
 
+# def transition_function():
+#     print("Voltando ao jogo!")
+
+# def run_game():
+#     pygame.init()
+#     screen = pygame.display.set_mode((Constantes.largura, Constantes.altura))
+#     pygame.display.set_caption("Show do Milhão")
+#     tela_erro = TelaErro(screen, transition_function)
+#     resposta_correta = False  # Simulando uma resposta errada
+#     tela_erro.atualizar_pontuacao(resposta_correta)
+#     tela_erro.exibir_tela_erro()
+#     tela_erro.salvar_pontuacao()
+#     pygame.quit()
+
+# if __name__ == "__main__":
+#     run_game()
 
 
 
 
 
 # # main.py
+# import pygame
+# from Telas.TelaAcerto import TelaAcerto
+# import Constantes
+
+# def transition_function():
+#     print("Voltando à tela inicial!")
+
+# pygame.init()
+# screen = pygame.display.set_mode((Constantes.largura, Constantes.altura))
+# pygame.display.set_caption("Tela de Acerto")
+
+# tela_acerto = TelaAcerto(screen, transition_function)
+
+# running = True
+# clock = pygame.time.Clock()
+
+# while running:
+#     for event in pygame.event.get():
+#         if event.type == pygame.QUIT:
+#             running = False
+
+#     tela_acerto.atualizar_pontuacao()
+#     tela_acerto.draw()
+
+#     pygame.display.flip()
+#     clock.tick(60)
+
+# pygame.quit()
+
+
+
+
+
+
+
+
+
+# main.py
 
 # import pygame
 # import sys
