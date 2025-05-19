@@ -154,13 +154,34 @@ class BaseDeDados():
             return "Error ao buscar perguntas!"
     
      # Adiciona uma questão ao banco de dados.
-    def add_questao(self, questao:str, alter1:str, alter2:str, alter3:str, answer:str):
+    def add_questao(self, Enunciado: str, DificuldadePergunta: str, idMateria: int, alter1: str, alter2: str, alter3: str, answer: str):
         try:
-            self.cursor.execute("INSERT INTO Pergunta (Enunciado) SELECT '%s'" % (questao))
-            question_id = self.cursor.lastrowid
-            self.cursor.executemany("INSERT INTO Respostas (answer_text, is_true, question_id) VALUES (%s, %s, %s)", [(alter1, 0, question_id), (alter2, 0, question_id), (alter3, 0, question_id), (answer, 1, question_id)])
+            self.cursor.execute("INSERT INTO Perguntas (Enunciado, DificuldadePergunta, Materia_idMateria) VALUES (%s, %s, %s)" % (Enunciado, DificuldadePergunta, idMateria))
+            idPerguntas = self.cursor.lastrowid
+             
+            alternativas = [
+                (alter1, False, idPerguntas),
+                (alter2, False, idPerguntas),
+                (alter3, False, idPerguntas),
+                (answer, True, idPerguntas)
+            ]
+            for texto, correta in alternativas:
+                self.cursor.executemany("INSERT INTO Respostas (TextoResposta) VALUES (%s)" % (texto))
+                idResposta = self.cursor.lastrowid
+                self.cursor.execute("INSERT INTO Pergunta_Resposta (Perguntas_idPerguntas, Respostas_idRespostas, Correta) VALUES (%s, %s, %s)", (idPerguntas, idResposta, correta))
+            
             self.conexao.commit()
             print("Questão adicionada!")
+        except Exception as e:
+            print(e)
+
+
+     # Deleta uma questão do banco de dados.
+    def delete_question(self, idPerguntas:int):
+        try:
+            sql = ("DELETE FROM Perguntas WHERE idPerguntas = '%s'" % (idPerguntas))
+            self.cursor.execute(sql)
+            self.conexao.commit()
         except Exception as e:
             print(e)
 
