@@ -5,7 +5,7 @@ import mysql.connector
 
 load_dotenv()
 
-class BaseDeDados():
+class Database():
     def __init__(self):
         self.host =os.getenv("HOST")
         self.user = os.getenv("USER")
