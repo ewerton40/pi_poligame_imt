@@ -80,7 +80,7 @@ class BaseDeDados():
         except Exception as e:
             print(e)
 
-    def get_all_questions_json(self) -> str:
+    def get_all_questoes_json(self) -> str:
         try:
             """
                 Create an sql query that returns all questions and their answers like this:
@@ -177,7 +177,7 @@ class BaseDeDados():
 
 
      # Deleta uma questão do banco de dados.
-    def delete_question(self, idPerguntas:int):
+    def delete_questao(self, idPerguntas:int):
         try:
             sql = ("DELETE FROM Perguntas WHERE idPerguntas = '%s'" % (idPerguntas))
             self.cursor.execute(sql)
@@ -185,7 +185,45 @@ class BaseDeDados():
         except Exception as e:
             print(e)
 
-            
-
-    
-    
+    def get_all_questoes(self):
+        try:
+            sql = ("""
+                SELECT 
+                    p.idPerguntas AS pergunta_id,
+                    p.Enunciado AS pergunta,
+                    (
+                        SELECT TextoResposta
+                        FROM Pergunta_Resposta pr 
+                        JOIN Respostas r ON pr.Respostas_idRespostas = r.idRespostas
+                        WHERE pr.Perguntas_idPerguntas = p.idPerguntas AND pr.Correta = FALSE
+                        LIMIT 1 OFFSET 0
+                    ) AS alternativa1,
+                    (
+                        SELECT TextoResposta 
+                        FROM Pergunta_Resposta pr 
+                        JOIN Respostas r ON pr.Respostas_idRespostas = r.idRespostas
+                        WHERE pr.Perguntas_idPerguntas = p.idPerguntas AND pr.Correta = FALSE
+                        LIMIT 1 OFFSET 1
+                    ) AS alternativa2,
+                    (
+                        SELECT TextoResposta 
+                        FROM Pergunta_Resposta pr 
+                        JOIN Respostas r ON pr.Respostas_idRespostas = r.idRespostas
+                        WHERE pr.Perguntas_idPerguntas = p.idPerguntas AND pr.Correta = FALSE
+                        LIMIT 1 OFFSET 2
+                    ) AS alternativa3,
+                    (
+                        SELECT TextoResposta 
+                        FROM Pergunta_Resposta pr 
+                        JOIN Respostas r ON pr.Respostas_idRespostas = r.idRespostas
+                        WHERE pr.Perguntas_idPerguntas = p.idPerguntas AND pr.Correta = TRUE
+                        LIMIT 1
+                    ) AS resposta_correta
+                FROM Perguntas p
+            """)
+            self.cursor.execute(sql)
+            questions = self.cursor.fetchall()
+            self.conexao.commit()
+            return questions
+        except Exception as e:
+            print("Erro ao buscar perguntas:", e)
