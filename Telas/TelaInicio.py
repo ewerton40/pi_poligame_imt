@@ -17,9 +17,8 @@ class TelaInicio(Tela):
         self.pos = 0
         self.images = {}
         fonte = pygame.font.SysFont("Arial", 24)
-        self.sair = Botao((325, 380), (150, 50), pygame.Color("gray"), "Sair", fonte)
-        self.ranking = Botao((325, 420), (150, 50), pygame.Color("gray"), "Ranking", fonte)
-        self.jogar = Botao((325, 300), (150, 50), pygame.Color("gray"), "Jogar", fonte)
+        self.sair = Botao((580, 470), (150, 50), pygame.Color("gray"), "Sair", fonte)
+        self.jogar = Botao((580, 400), (150, 50), pygame.Color("gray"), "Jogar", fonte)
         self.logo: pygame.Surface
        
         

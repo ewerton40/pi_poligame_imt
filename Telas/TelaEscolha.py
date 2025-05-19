@@ -18,8 +18,8 @@ class TelaEscolha(Tela):
          self.pos = 0
          self.images = {}
          fonte = pygame.font.SysFont("Arial", 24) 
-         self.portugues = Botao((325, 170), (170, 90), pygame.Color("skyblue"), "Português", fonte)
-         self.quimica = Botao((325, 320), (170, 90), pygame.Color("skyblue"), "Química", fonte)
+         self.portugues = Botao((580, 180), (170, 90), pygame.Color("skyblue"), "Português", fonte)
+         self.quimica = Botao((580, 340), (170, 90), pygame.Color("skyblue"), "Química", fonte)
 
 
     def load(self):
