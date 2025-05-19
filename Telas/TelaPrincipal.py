@@ -2,8 +2,22 @@ import pygame
 import sys
 
 pygame.init()
-screen = pygame.display.set_mode((1920, 1080))
+resolucao_original_x = 1920
+resolucao_original_y = 1080
+resolucao_desejada_x = 1280
+resolucao_desejada_y = 720
+
+screen = pygame.display.set_mode((resolucao_desejada_x, resolucao_desejada_y))
 pygame.display.set_caption("Quiz com Fundo Imagem")
+
+# Função para escalar coordenadas e tamanhos
+def escalar(valor):
+    return int(valor * (resolucao_desejada_x / resolucao_original_x))
+
+# Função para escalar coordenadas Y
+def escalar_y(valor):
+    return int(valor * (resolucao_desejada_y / resolucao_original_y))
+
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -12,40 +26,40 @@ BUTTON_COLOR = (50, 50, 50)
 BUTTON_HOVER = (80, 80, 80)
 SELECTED_COLOR = (100, 150, 200)  # Cor para alternativa selecionada
 
-font_question = pygame.font.SysFont('Arial', 48)
-font_alternative = pygame.font.SysFont('Arial', 36)
-font_button = pygame.font.SysFont('Arial', 40)
-font_acerto = pygame.font.SysFont('Arial', 120, bold=True) # Fonte maior e em negrito para o acerto
+font_question = pygame.font.SysFont('Arial', escalar(48))
+font_alternative = pygame.font.SysFont('Arial', escalar(36))
+font_button = pygame.font.SysFont('Arial', escalar(40))
+font_acerto = pygame.font.SysFont('Arial', escalar(120), bold=True) # Fonte maior e em negrito para o acerto
 
-background = pygame.image.load("imagens/telaprincipal.png")
-background = pygame.transform.scale(background, (1920, 1080))
+background_original = pygame.image.load("imagens/Prancheta 2.png")
+background = pygame.transform.scale(background_original, (resolucao_desejada_x, resolucao_desejada_y))
 
-botao_premio_rect = pygame.Rect(1500, 0, 250, 80)
-area_premio = pygame.Rect(500, 700, 200, 60)
-area_pergunta = pygame.Rect(80, 70, 1400, 150)
+botao_premio_rect = pygame.Rect(escalar(1500), escalar_y(0), escalar(250), escalar_y(80))
+area_premio = pygame.Rect(escalar(500), escalar_y(700), escalar(200), escalar_y(60))
+area_pergunta = pygame.Rect(escalar(80), escalar_y(70), escalar(1400), escalar_y(150))
 
 # Dicionário de alternativas
 alternativas_dict = {
     "A": "Rio de Janeiro",
     "B": "São Paulo",
     "C": "Brasília",
-    "D": "loreeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeem"
+    "D": "Minas gerais"
 }
 
 # Define as áreas para as alternativas baseadas no dicionário
 areas_alternativas = {}
-y_offset_inicial = 380
-altura_alternativa = 100
-espacamento_vertical = 70  # Espaçamento entre as caixas
+y_offset_inicial = escalar_y(380)
+altura_alternativa = escalar_y(100)
+espacamento_vertical = escalar_y(70)  # Espaçamento entre as caixas
 
 for chave, texto in alternativas_dict.items():
     posicao_y = y_offset_inicial + (list(alternativas_dict.keys()).index(chave)) * (altura_alternativa + espacamento_vertical)
-    areas_alternativas[chave] = pygame.Rect(50, posicao_y, 900, altura_alternativa)
+    areas_alternativas[chave] = pygame.Rect(escalar(50), posicao_y, escalar(900), altura_alternativa)
 
-btn_confirmar = pygame.Rect(200, 1010, 200, 60)
-btn_parar = pygame.Rect(550, 1010, 200, 60)
+btn_confirmar = pygame.Rect(escalar(200), escalar_y(1010), escalar(200), escalar_y(60))
+btn_parar = pygame.Rect(escalar(550), escalar_y(1010), escalar(200), escalar_y(60))
 #TEXTO PERGUNTAS
-pergunta = "lorem loremlremloremloremlot. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+pergunta = "Qual a capital do brasil?."
 
 # Variável para armazenar a alternativa selecionada (agora a chave do dicionário)
 alternativa_selecionada = None
@@ -67,7 +81,7 @@ def desenhar_texto_quebrado(surface, texto, font, color, rect):
     linhas.append(linha_atual)
 
     y_offset = rect.top
-    espacamento_linhas = 10  # Espaçamento entre as linhas
+    espacamento_linhas = escalar_y(10)  # Espaçamento entre as linhas
     for linha in linhas:
         texto_renderizado = font.render(linha.strip(), True, color)
         texto_rect = texto_renderizado.get_rect(topleft=(rect.left, y_offset))
@@ -81,7 +95,7 @@ def desenhar_botao(rect, texto, hover=False):
     pygame.draw.rect(screen, BLACK, rect)
 
     # Reduz o retângulo em 4px de cada lado para a parte interna (o botão)
-    inner_rect = rect.inflate(-8, -8)
+    inner_rect = rect.inflate(-escalar(16), -escalar_y(16))
     pygame.draw.rect(screen, color, inner_rect)
 
     # Desenha o texto centralizado no botão interno
@@ -102,12 +116,12 @@ def desenhar_alternativa(surface, rect, texto, selecionada=False, hover=False):
     pygame.draw.rect(surface, BLACK, rect)
 
     # Desenha o fundo interno
-    inner_rect = rect.inflate(-4, -4)
+    inner_rect = rect.inflate(-escalar(16), -escalar_y(16))
     pygame.draw.rect(surface, color, inner_rect)
 
     # Desenha o texto
-    text_surf = font_alternative.render(texto, True, BLACK)
-    text_rect = text_surf.get_rect(midleft=(inner_rect.x + 10, inner_rect.centery))
+    text_surf = font_alternative.render(f"{texto}", True, BLACK)
+    text_rect = text_surf.get_rect(midleft=(inner_rect.x + escalar(10), inner_rect.centery))
     surface.blit(text_surf, text_rect)
 
 def desenhar_botao_premio(surface, rect, texto, fonte, cor_texto, cor_fundo, cor_borda):
@@ -115,7 +129,7 @@ def desenhar_botao_premio(surface, rect, texto, fonte, cor_texto, cor_fundo, cor
     pygame.draw.rect(surface, cor_borda, rect)
 
     # Reduz o retângulo para a parte interna do botão
-    inner_rect = rect.inflate(-4, -4)
+    inner_rect = rect.inflate(-escalar(16), -escalar_y(16))
 
     # Desenha o fundo do botão
     pygame.draw.rect(surface, cor_fundo, inner_rect)
