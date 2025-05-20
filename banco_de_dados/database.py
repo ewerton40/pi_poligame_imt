@@ -227,3 +227,25 @@ class Database():
             return questions
         except Exception as e:
             print("Erro ao buscar perguntas:", e)
+
+        
+    def login_usuario(self, email: str, senha: str):
+        try:
+            # Verifica se é um aluno
+            sql_aluno = ("SELECT idAluno FROM Aluno WHERE EmailAluno=%s AND SenhaAluno=%s")
+            self.cursor.execute(sql_aluno, (email, senha))
+            aluno = self.cursor.fetchone()
+            if aluno:
+                return {"tipo": "Aluno", "id": aluno[0]}
+            
+            # Verifica se é um professor
+            sql_professor = ("SELECT idProfessor FROM Professor WHERE EmailProfessor=%s AND SenhaProfessor=%s")
+            self.cursor.execute(sql_professor, (email, senha))
+            professor = self.cursor.fetchone()
+            if professor:
+                return {"tipo": "Professor", "id": professor[0]}
+            
+            return None
+        except Exception as e:
+            print("Erro ao tentar login:", e)
+            return None
