@@ -1,26 +1,26 @@
-# telaErro
+# # telaErro
 
-import pygame
-from Telas.TelaErro import TelaErro
-import Botao
-import Constantes
+# import pygame
+# from Telas.TelaErro import TelaErro
+# import Botao
+# import Constantes
 
-def transition_function():
-    print("Voltando ao jogo!")
+# def transition_function():
+#     print("Voltando ao jogo!")
 
-def run_game():
-    pygame.init()
-    screen = pygame.display.set_mode((Constantes.largura, Constantes.altura))
-    pygame.display.set_caption("Show do Milhão")
-    tela_erro = TelaErro(screen, transition_function)
-    resposta_correta = False  # Simulando uma resposta errada
-    tela_erro.atualizar_pontuacao(resposta_correta)
-    tela_erro.exibir_tela_erro()
-    tela_erro.salvar_pontuacao()
-    pygame.quit()
+# def run_game():
+#     pygame.init()
+#     screen = pygame.display.set_mode((Constantes.largura, Constantes.altura))
+#     pygame.display.set_caption("Show do Milhão")
+#     tela_erro = TelaErro(screen, transition_function)
+#     resposta_correta = False  # Simulando uma resposta errada
+#     tela_erro.atualizar_pontuacao(resposta_correta)
+#     tela_erro.exibir_tela_erro()
+#     tela_erro.salvar_pontuacao()
+#     pygame.quit()
 
-if __name__ == "__main__":
-    run_game()
+# if __name__ == "__main__":
+#     run_game()
 
 
 
@@ -66,34 +66,34 @@ if __name__ == "__main__":
 
 # main.py
 
-# import pygame
-# import sys
-# import Constantes  # Certifique-se de que esse módulo exista
-# from Botao import Botao            # Certifique-se de que esse módulo exista
+import pygame
+import sys
+import Constantes  # Certifique-se de que esse módulo exista
+from Botao import Botao            # Certifique-se de que esse módulo exista
 
-# # Aqui você pode copiar sua classe TelaLogin completa (que você já enviou), ou importá-la de outro arquivo:
-# from Telas.TelaLogin import TelaLogin  # Se você tiver separado a classe em TelaLogin.py
+# Aqui você pode copiar sua classe TelaLogin completa (que você já enviou), ou importá-la de outro arquivo:
+from Telas.TelaLogin import TelaLogin  # Se você tiver separado a classe em TelaLogin.py
 
-# def quit_game():
-#     pygame.quit()
-#     sys.exit()
+def quit_game():
+    pygame.quit()
+    sys.exit()
 
-# def transition(tela):
-#     print("Transição de tela:", type(tela))
+def transition(tela):
+    print("Transição de tela:", type(tela))
 
-# def main():
-#     pygame.init()
-#     screen = pygame.display.set_mode((Constantes.largura, Constantes.altura))
-#     pygame.display.set_caption("Teste Tela de Login")
-#     clock = pygame.time.Clock()
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode((Constantes.largura, Constantes.altura))
+    pygame.display.set_caption("Teste Tela de Login")
+    clock = pygame.time.Clock()
 
-#     tela_login = TelaLogin(screen, transition, quit_game)
-#     tela_login.load()
+    tela_login = TelaLogin(screen, transition, quit_game)
+    tela_login.load()
 
-#     while True:
-#         tela_login.run()
-#         pygame.display.update()
-#         clock.tick(60)
+    while True:
+        tela_login.run()
+        pygame.display.update()
+        clock.tick(60)
 
-# if __name__ == "__main__":
-#     main()
+if __name__ == "__main__":
+    main()
