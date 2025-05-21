@@ -1,5 +1,5 @@
-largura = 1920
-altura = 1080
+largura = 1280
+altura = 720
 titulo_jogo = "PoliGame"
 
 cor_rgb_botao = (4, 180, 196)

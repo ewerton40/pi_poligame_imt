@@ -1,3 +1,5 @@
+# telaErro
+
 import pygame
 from Telas.TelaErro import TelaErro
 import Botao
@@ -22,32 +24,8 @@ if __name__ == "__main__":
 
 
 
-# import pygame
-# from Telas.TelaErro import TelaErro
-# import Botao
-# import Constantes
 
-# def transition_function():
-#     print("Voltando ao jogo!")
-
-# def run_game():
-#     pygame.init()
-#     screen = pygame.display.set_mode((Constantes.largura, Constantes.altura))
-#     pygame.display.set_caption("Show do Milhão")
-#     tela_erro = TelaErro(screen, transition_function)
-#     resposta_correta = False  # Simulando uma resposta errada
-#     tela_erro.atualizar_pontuacao(resposta_correta)
-#     tela_erro.exibir_tela_erro()
-#     tela_erro.salvar_pontuacao()
-#     pygame.quit()
-
-# if __name__ == "__main__":
-#     run_game()
-
-
-
-
-
+# #acerto
 # # main.py
 # import pygame
 # from Telas.TelaAcerto import TelaAcerto
