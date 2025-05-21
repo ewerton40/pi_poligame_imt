@@ -1,6 +1,6 @@
 import pygame
 import Constantes
-from Botao import Botao
+from UI.Botao import Botao
 
 class TelaAcerto:
     def __init__(self, screen, transition_call):  # Corrigido de _init para _init_

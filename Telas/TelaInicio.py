@@ -6,7 +6,7 @@ from sys import exit
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 import Constantes 
-from Botao import Botao 
+from UI.Botao import Botao 
 from Telas.TelaEscolha import TelaEscolha
 
 class TelaInicio(Tela):

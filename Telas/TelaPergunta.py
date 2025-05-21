@@ -1,19 +1,18 @@
 import json
 import random
 import pygame
-import Constantes
 from Pergunta import Pergunta
-from Botao import Botao
-from Pontuacao import Pontuacao
-
+from UI.Botao import Botao
+from UI.Pontuacao import Pontuacao
+from util import WINDOW_SIZE, break_line, DATABASE, USER
 
 # TELA DE JOGO
 
 class TelaPergunta(Tela):
-    def __init__(self, tela, transition_call):
-        super().__init__(tela, transition_call)
+    def __init__(self, screen, transition_call):
+        super().__init__(screen, transition_call)
 
-        self.tela = tela
+        self.screen = screen
         self.images = {}
         self.texts = []
         self.botao_resposta = []
@@ -23,15 +22,15 @@ class TelaPergunta(Tela):
         self.voltar = Botao((10, 465), (150, 50), pygame.Color("gray"), "Voltar")
 
     def load(self):
-        questions = DATABASE.get_all_questions_json()
+        questions = DATABASE.get_all_questoes_json()
         perguntas = json.loads(questions)
         random.shuffle(perguntas)
         selected_questions = perguntas[:10]
         #Cria um pool de perguntas
-        self.pool = QuestionPool(selected_questions)
+        self.pool = Pergunta(selected_questions)
         self.text = self.pool.get_question() #Pega a primeira pergunta
         self.answers:list[dict] = self.pool.get_answers() #Pega as respostas para compará-las com a pergunta
-        self.score = Score((10, 10), (100, 50), pygame.Color("gray"))
+        self.score = Pontuacao((10, 10), (100, 50), pygame.Color("gray"))
         self.len_questions = len(self.pool.questions) #Pega o número de perguntas
 
         self.images = {
@@ -83,7 +82,7 @@ class TelaPergunta(Tela):
                 if correct:
                     self.score.increment_score()
         if len(self.pool.questions) == 1:
-            self.transition_call(Level4(self.screen, self.transition_call, self.score.score)) #Se não houver mais perguntas, muda para a próxima fase
+            self.transition_call(TelaAcerto(self.screen, self.transition_call, self.score.score)) #Se não houver mais perguntas, muda para a próxima fase
             self.ended = True
         else:
             if not first:
@@ -93,7 +92,7 @@ class TelaPergunta(Tela):
             self.answers = self.pool.get_answers()
             self.answer_btn = []
             for a in self.answers:
-                self.answer_btn.append(Button((WINDOW_SIZE[0] / 2 - 350,
+                self.answer_btn.append(Botao((WINDOW_SIZE[0] / 2 - 350,
                                                 WINDOW_SIZE[1] / 2 + 120 *
                                                   self.answers.index(a) / 2 + 50)
                                               , (700, 40), pygame.Color("gray"), a["text"])) #Cria os botões de resposta

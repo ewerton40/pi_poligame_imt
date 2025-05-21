@@ -1,7 +1,7 @@
 import pygame
 import Constantes   
 from  Telas import TelaAdmin
-from Botao import Botao
+from UI.Botao import Botao
 from hashlib import sha256
 
 

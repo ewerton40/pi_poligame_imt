@@ -61,7 +61,7 @@
 
 import pygame
 import Constantes
-from Botao import Botao
+from UI.Botao import Botao
 import pickle
 
 class TelaErro:

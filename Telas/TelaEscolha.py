@@ -6,7 +6,7 @@ from sys import exit
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from Telas.TelaAdmin import TelaAdmin
-from Botao import Botao
+from UI.Botao import Botao
 
 
 
