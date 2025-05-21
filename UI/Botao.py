@@ -32,7 +32,7 @@ class Botao:
                 # Set the flag to True when the button is clicked
                 self.clicked = True
         else:
-            self.color = pygame.Color("skyblue")
+            self.color = self.color
             # Reset the flag when the button is not clicked
             self.clicked = False
 

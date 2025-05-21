@@ -1,28 +1,22 @@
+import pygame
 import json
 import random
-import pygame
-from Pergunta import Pergunta
 from UI.Botao import Botao
 from UI.Pontuacao import Pontuacao
+import Pergunta # Classe que gerencia perguntas
 from util import WINDOW_SIZE, break_line, DATABASE, USER
-
-# TELA DE JOGO
 
 class TelaPergunta(Tela):
     def __init__(self, screen, transition_call):
         super().__init__(screen, transition_call)
-
         self.screen = screen
+        self.ended = False
         self.images = {}
         self.texts = []
-        self.botao_resposta = []
-        self.pos = 0
-        self.ended = False
-
-        self.voltar = Botao((10, 465), (150, 50), pygame.Color("gray"), "Voltar")
+        self.answer_btn = []
 
     def load(self):
-        questions = DATABASE.get_all_questoes_json()
+        questions = DATABASE.get_all_questions_json()
         perguntas = json.loads(questions)
         random.shuffle(perguntas)
         selected_questions = perguntas[:10]
@@ -30,71 +24,61 @@ class TelaPergunta(Tela):
         self.pool = Pergunta(selected_questions)
         self.text = self.pool.get_question() #Pega a primeira pergunta
         self.answers:list[dict] = self.pool.get_answers() #Pega as respostas para compará-las com a pergunta
-        self.score = Pontuacao((10, 10), (100, 50), pygame.Color("gray"))
-        self.len_questions = len(self.pool.questions) #Pega o número de perguntas
+        self.score = Pontuacao((1170, 10), (100, 50), pygame.Color("red"))
+        self.len_questions = len(self.pool.questions) 
 
         self.images = {
-            "background": pygame.image.load("./resources/background.png")
-                                                    .convert_alpha(),
-
-            "chalkboard": pygame.transform.scale_by(pygame.image.load("./resources/chalkboard.png")
-                                                    .convert_alpha(), 1.5)
+            "background": pygame.image.load("imagens/imagem_pergunta.jpeg").convert_alpha(),
         }
 
-        self.next_question(first=True) #Pega a próxima pergunta
-
-        self.is_loaded = all(image is not None for image in self.images.values()) #Verifica se todas as imagens foram carregadas
+        self.next_question(first=True)
+        self.is_loaded = all(image is not None for image in self.images.values())
 
     def run(self):
         self.screen.fill("black")
-        self.screen.blit(self.images["background"], (self.pos, 0))
-        self.screen.blit(self.images["background"], (self.pos - WINDOW_SIZE[0], 0))
+        self.screen.blit(self.images["background"], (0, 0))
 
-        self.pos += 1
+        for text in self.texts:
+            text.draw(self.screen)
 
-        if self.pos >= WINDOW_SIZE[0]:
-            self.pos = 0
-
-        self.screen.blit(self.images["chalkboard"], (WINDOW_SIZE[0] / 2 - 150 * 1.5, 20))
-        for i in self.texts:
-            i.draw(self.screen) #Desenha a pergunta dentro do quadro
-
-        #Faz com que o número de perguntas a serem respondidas possa ser definido
-        cur_level = f'Level {self.len_questions- len(self.pool.questions) + 1} / {self.len_questions}'
-        font = pygame.font.Font("./resources/fonts/monogram.ttf", 32)
-        text = font.render(cur_level, True, pygame.Color("gray"))
-
-        self.screen.blit(text, (WINDOW_SIZE[0] / 2 - text.get_width() / 2, 35))
+        level_str = f'Level {self.len_questions - len(self.pool.questions) + 1} / {self.len_questions}'
+        font = pygame.font.Font("resources/fonts/monogram.ttf", 32)
+        level_text = font.render(level_str, True, pygame.Color("gray"))
+        self.screen.blit(level_text, (WINDOW_SIZE[0] / 2 - level_text.get_width() / 2, 35))
 
         self.score.draw(self.screen)
 
         for answer_btn in self.answer_btn:
             answer_btn.draw(self.screen)
             if answer_btn.check_button():
-                if self.pool.is_correct_answer(answer_btn.text): #Verifica se a resposta está correta
+                if self.pool.is_correct_answer(answer_btn.text):
                     self.next_question(correct=True)
                 else:
                     self.next_question()
 
     def next_question(self, first=False, correct=False):
         if not first:
-            if not self.ended:
-                if correct:
-                    self.score.increment_score()
+            if not self.ended and correct:
+                self.score.increment_score()
+
         if len(self.pool.questions) == 1:
-            self.transition_call(TelaAcerto(self.screen, self.transition_call, self.score.score)) #Se não houver mais perguntas, muda para a próxima fase
+            self.transition_call(TelaAcerto(self.screen, self.transition_call, self.score.score))
             self.ended = True
         else:
             if not first:
-                self.pool.questions.pop(0) #Remove a pergunta atual
-                self.pool.next_question() #Pega a próxima pergunta
+                self.pool.questions.pop(0)
+                self.pool.next_question()
+
             self.text = self.pool.get_question()
             self.answers = self.pool.get_answers()
+
             self.answer_btn = []
-            for a in self.answers:
-                self.answer_btn.append(Botao((WINDOW_SIZE[0] / 2 - 350,
-                                                WINDOW_SIZE[1] / 2 + 120 *
-                                                  self.answers.index(a) / 2 + 50)
-                                              , (700, 40), pygame.Color("gray"), a["text"])) #Cria os botões de resposta
-            self.texts = break_line(self.text,
-                                     pygame.Vector2(WINDOW_SIZE[0] / 2 - 150 * 1.5 + 30, 40)) #Quebra a pergunta em várias linhas
+            for idx, a in enumerate(self.answers):
+                pos_y = WINDOW_SIZE[1] / 2 + 120 * idx / 2 + 50
+                self.answer_btn.append(
+                    Botao((50, pos_y), (700, 40), pygame.Color("gray"), a["text"])
+                )
+
+            self.texts = break_line(
+                self.text, pygame.Vector2(50, 40)
+            )
