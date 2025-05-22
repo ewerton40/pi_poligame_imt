@@ -1,0 +1,2 @@
+
+    tela_gerenciamento.executar()
