@@ -1,16 +1,13 @@
 import pygame
 
 # Dimensões da tela
-LARGURA_TELA = 800
-ALTURA_TELA = 600
 
 # Fonte padrão
-FONTE_PADRAO = pygame.font.Font(None, 30)
+
 
 import pygame
 
 # Fonte local (garantida inicializada antes de importar este módulo)
-FONTE_PADRAO = pygame.font.Font(None, 30)
 
 class Botao:
     def __init__(self, texto, x, y, largura, altura, cor, cor_texto, funcao=None):
@@ -20,7 +17,7 @@ class Botao:
         self.cor_texto = cor_texto
         self.funcao = funcao
         # Renderiza texto usando fonte local
-        self.texto_renderizado = FONTE_PADRAO.render(texto, True, cor_texto)
+        self.texto_renderizado = pygame.font.Font(None, 30).render(texto, True, cor_texto)
         self.texto_rect = self.texto_renderizado.get_rect(center=self.rect.center)
 
     def desenhar(self, tela):
@@ -44,7 +41,7 @@ class ItemLista:
         self.x_item = self.MARGEM
         self.largura_item = largura_total - 2 * self.MARGEM
         self.rect = pygame.Rect(self.x_item, y, self.largura_item, self.ALTURA)
-        self.texto_renderizado = FONTE_PADRAO.render(texto_pergunta, True, pygame.Color("white"))
+        self.texto_renderizado = pygame.font.Font(None, 30).render(texto_pergunta, True, pygame.Color("white"))
         self.texto_rect = self.texto_renderizado.get_rect(midleft=(self.x_item + self.MARGEM, y + self.ALTURA // 2))
         self.botoes_filtro = self._criar_botoes_filtro()
         self.botao_editar = self._criar_botao_editar()
@@ -83,6 +80,6 @@ class ItemLista:
         return False
 
 def desenhar_texto_centralizado(tela, texto, fonte, cor, rect):
-    texto_renderizado = fonte.render(texto, True, cor)
+    texto_renderizado = pygame.font.Font(None, 30).render(texto, True, cor)
     texto_rect = texto_renderizado.get_rect(center=rect.center)
     tela.blit(texto_renderizado, texto_rect)

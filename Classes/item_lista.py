@@ -2,7 +2,6 @@ import pygame
 from .botao import Botao
 
 # Fonte padrão
-FONTE_PADRAO = pygame.font.Font(None, 30)
 
 class ItemLista:
     ALTURA = 50
@@ -21,7 +20,7 @@ class ItemLista:
 
         # Renderiza texto da pergunta
         cor_texto = pygame.Color("white")
-        self.texto_renderizado = FONTE_PADRAO.render(texto_pergunta, True, cor_texto)
+        self.texto_renderizado = pygame.font.Font(None, 30).render(texto_pergunta, True, cor_texto)
         self.texto_rect = self.texto_renderizado.get_rect(
             midleft=(self.x_item + self.MARGEM, y + self.ALTURA // 2)
         )

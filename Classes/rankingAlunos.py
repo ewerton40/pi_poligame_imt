@@ -1,15 +1,7 @@
 import pygame
 
-# Fontes locais
-FONTE_PADRAO = pygame.font.Font(None, 30)
-FONTE_CABECALHO = pygame.font.Font(None, 22)
-FONTE_FECHAR = pygame.font.Font(None, 20)
-
 # Função auxiliar para desenhar texto centralizado
-def desenhar_texto_centralizado(tela, texto, fonte, cor, rect):
-    surf = fonte.render(texto, True, cor)
-    texto_rect = surf.get_rect(center=rect.center)
-    tela.blit(surf, texto_rect)
+
 
 class RankingTela:
     def __init__(self, tela_principal, ranking_data):
@@ -55,36 +47,41 @@ class RankingTela:
         )
 
         self.ranking_data = ranking_data
+    
+    def desenhar_texto_centralizado(tela, texto, tamanho_fonte, cor, rect):
+        fonte = pygame.font.Font(None, tamanho_fonte)
+        surf = fonte.render(texto, True, cor)
+        texto_rect = surf.get_rect(center=rect.center)
+        tela.blit(surf, texto_rect)
 
     def desenhar_cabecalhos(self):
         cor_fundo = pygame.Color("dimgray")
         cor_texto = pygame.Color("white")
         for rect, texto in self.rects_cabecalho:
             pygame.draw.rect(self.tela_ranking, cor_fundo, rect, border_radius=3)
-            desenhar_texto_centralizado(self.tela_ranking, texto, FONTE_CABECALHO, cor_texto, rect)
+            self.desenhar_texto_centralizado(self.tela_ranking, texto, 22, cor_texto, rect)
 
     def desenhar_botao_fechar(self):
         cor_botao = pygame.Color("saddlebrown")
         cor_texto = pygame.Color("white")
         pygame.draw.rect(self.tela_ranking, cor_botao, self.rect_botao_fechar, border_radius=3)
-        desenhar_texto_centralizado(self.tela_ranking, "FECHAR", FONTE_FECHAR, cor_texto, self.rect_botao_fechar)
+        self.desenhar_texto_centralizado(self.tela_ranking, "FECHAR", 20, cor_texto, self.rect_botao_fechar)
 
     def desenhar_ranking_data(self):
         y = self.margem_topo_lista
         cor_linha = pygame.Color("gray")
         cor_texto = pygame.Color("white")
+        fonte = pygame.font.Font(None, 30)
         for data in self.ranking_data:
-            # Desenha fundo da linha
             pygame.draw.rect(
                 self.tela_ranking,
                 cor_linha,
                 (self.margem, y, self.largura_da_tela - 2 * self.margem, self.altura_linha),
                 border_radius=2
             )
-            # Desenha colunas de texto
             textos = [data["nome"], data["pontuacao"], data["identificacao"], data["turma"]]
             for i, texto in enumerate(textos):
-                surf = FONTE_PADRAO.render(texto, True, cor_texto)
+                surf = fonte.render(texto, True, cor_texto)
                 x = self.margem + i * (self.largura_coluna + self.espacamento_linha) + 5
                 y_texto = y + (self.altura_linha - surf.get_height()) // 2
                 self.tela_ranking.blit(surf, (x, y_texto))
@@ -102,7 +99,6 @@ class RankingTela:
                     if self.rect_botao_fechar.collidepoint(pos_rel):
                         return True
 
-            # Fundo geral
             self.tela_ranking.fill(pygame.Color("lightgray"))
             self.desenhar_cabecalhos()
             self.desenhar_botao_fechar()

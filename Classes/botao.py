@@ -1,7 +1,4 @@
 import pygame
-FONTE_PADRAO = pygame.font.Font(None, 30)
-FONTE_PEQUENA = pygame.font.Font(None, 24)
-
 
 class Botao:
     def __init__(self, texto, x, y, largura, altura, cor, cor_texto, funcao=None):
@@ -10,8 +7,9 @@ class Botao:
         self.cor = cor
         self.cor_texto = cor_texto
         self.funcao = funcao
-        # Renderiza texto usando fonte local
-        self.texto_renderizado = FONTE_PADRAO.render(texto, True, cor_texto)
+        # Renderiza texto diretamente com fonte embutida
+        fonte = pygame.font.Font(None, 30)
+        self.texto_renderizado = fonte.render(texto, True, cor_texto)
         self.texto_rect = self.texto_renderizado.get_rect(center=self.rect.center)
 
     def desenhar(self, tela):
