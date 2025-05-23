@@ -1,5 +1,4 @@
 import pygame
-
 from Telas.Tela import Tela
 import sys
 from sys import exit

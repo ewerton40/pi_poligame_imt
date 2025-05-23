@@ -3,6 +3,7 @@ import json
 import random
 from UI.Botao import Botao
 from UI.Pontuacao import Pontuacao
+from Telas.TelaAcerto import TelaAcerto
 import Pergunta # Classe que gerencia perguntas
 from util import WINDOW_SIZE, break_line, DATABASE, USER
 
@@ -16,7 +17,7 @@ class TelaPergunta(Tela):
         self.answer_btn = []
 
     def load(self):
-        questions = DATABASE.get_all_questions_json()
+        questions = DATABASE.get_all_questoes_json()
         perguntas = json.loads(questions)
         random.shuffle(perguntas)
         selected_questions = perguntas[:10]
@@ -42,7 +43,7 @@ class TelaPergunta(Tela):
             text.draw(self.screen)
 
         level_str = f'Level {self.len_questions - len(self.pool.questions) + 1} / {self.len_questions}'
-        font = pygame.font.Font("resources/fonts/monogram.ttf", 32)
+        font = pygame.font.Font("Arial", 32)
         level_text = font.render(level_str, True, pygame.Color("gray"))
         self.screen.blit(level_text, (WINDOW_SIZE[0] / 2 - level_text.get_width() / 2, 35))
 
