@@ -248,4 +248,123 @@ class Database():
             return None
         except Exception as e:
             print("Erro ao tentar login:", e)
-            return None
+            return None 
+        
+    def get_questao_materia(self) -> str:
+        try:
+            sql = """
+                SELECT 
+                    m.idMateria AS materia_id,
+                    m.NomeMateria AS materia_nome,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'idPergunta', p.idPerguntas,
+                            'enunciado', p.Enunciado,
+                            'dificuldade', p.DificuldadePergunta
+                        )
+                    ) AS perguntas
+                FROM Materia m
+                LEFT JOIN Perguntas p ON p.Materia_idMateria = m.idMateria
+                GROUP BY m.idMateria
+                ORDER BY m.NomeMateria;
+            """
+            self.cursor.execute(sql)
+            materias = self.cursor.fetchall()
+            self.conexao.commit()
+
+            materias_json = []
+            for materia in materias:
+                perguntas = json.loads(materia[2]) if materia[2] else []
+                materias_json.append({
+                    "idMateria": materia[0],
+                    "nomeMateria": materia[1],
+                    "perguntas": perguntas
+                })
+            return json.dumps(materias_json)
+
+        except Exception as e:
+            print("Erro ao buscar matéria com perguntas:", e)
+            return "Erro ao buscar matéria com perguntas"
+        
+    def get_questoes_por_materia(self, idMateria: int) -> str:
+        try:
+            sql = """
+                SELECT
+                    p.idPerguntas AS question_id,
+                    p.Enunciado AS question_text,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'answer_id', r.idRespostas,
+                            'answer_text', r.TextoResposta,
+                            'is_true', pr.Correta
+                        )
+                    ) AS answers
+                FROM Perguntas p
+                JOIN Pergunta_Resposta pr ON p.idPerguntas = pr.Perguntas_idPerguntas
+                JOIN Respostas r ON pr.Respostas_idRespostas = r.idRespostas
+                WHERE p.Materia_idMateria = %s
+                GROUP BY p.idPerguntas
+            """
+            self.cursor.execute(sql, (idMateria,))
+            questions = self.cursor.fetchall()
+            
+            questions_json = []
+            for question in questions:
+                answers = json.loads(question[2]) if question[2] else []
+                questions_json.append({
+                    "id": question[0],
+                    "question": question[1],
+                    "answers": answers
+                })
+            return json.dumps(questions_json)
+
+        except Exception as e:
+            print("Erro ao buscar questões por matéria:", e)
+            return "Error ao buscar questões por matéria!"
+
+
+    def get_questoes_por_materia_json(self, id_materia: int) -> str:
+        try:
+            sql = ("""
+                SELECT
+                    p.idPerguntas AS question_id,
+                    p.Enunciado AS question_text,
+                    JSON_ARRAYAGG(
+                        JSON_OBJECT(
+                            'answer_id', r.idRespostas,
+                            'answer_text', r.TextoResposta,
+                            'is_true', pr.Correta
+                        )
+                    ) AS answers
+                FROM Perguntas p
+                JOIN Pergunta_Resposta pr ON p.idPerguntas = pr.Perguntas_idPerguntas
+                JOIN Respostas r ON pr.Respostas_idRespostas = r.idRespostas
+                WHERE p.Materia_idMateria = %s
+                GROUP BY p.idPerguntas
+            """)
+
+            self.cursor.execute(sql, (id_materia,))
+            perguntas = self.cursor.fetchall()
+            self.conexao.commit()
+
+            questoes_json = []
+            for pergunta in perguntas:
+                pergunta_dict = {
+                    "id": pergunta[0],
+                    "question": pergunta[1],
+                    "answers": []
+                }
+                answers = json.loads(pergunta[2])
+                for answer in answers:
+                    answer_dict = {
+                        "id": answer["answer_id"],
+                        "text": answer["answer_text"],
+                        "correct": answer["is_true"]
+                    }
+                    pergunta_dict["answers"].append(answer_dict)
+                questoes_json.append(pergunta_dict)
+
+            return json.dumps(questoes_json)
+        except Exception as e:
+            print("Erro ao buscar questões por matéria:", e)
+            return "Erro"

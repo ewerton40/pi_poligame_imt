@@ -17,7 +17,7 @@ class TelaPergunta(Tela):
         self.answer_btn = []
 
     def load(self):
-        questions = DATABASE.get_all_questoes_json()
+        questions = DATABASE.get_questoes_por_materia_json()
         perguntas = json.loads(questions)
         random.shuffle(perguntas)
         selected_questions = perguntas[:10]

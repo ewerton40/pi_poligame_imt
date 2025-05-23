@@ -5,7 +5,7 @@ import sys
 from sys import exit
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from Telas.TelaAdmin import TelaAdmin
+from Telas.TelaPergunta import TelaPergunta
 from UI.Botao import Botao
 
 
@@ -41,8 +41,8 @@ class TelaEscolha(Tela):
     
         self.portugues.draw(self.screen)
         if self.portugues.check_button():
-            self.transition_call(TelaAdmin(self.screen, self.transition_call))
+            self.transition_call(TelaPergunta(self.screen, self.transition_call))
 
         self.quimica.draw(self.screen)
         if self.quimica.check_button():   
-            self.transition_call(TelaAdmin(self.screen, self.transition_call))          
+            self.transition_call(TelaPergunta(self.screen, self.transition_call))          
