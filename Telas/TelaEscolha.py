@@ -41,8 +41,8 @@ class TelaEscolha(Tela):
     
         self.portugues.draw(self.screen)
         if self.portugues.check_button():
-            self.transition_call(TelaPergunta(self.screen, self.transition_call))
+            self.transition_call(TelaPergunta(self.screen, self.transition_call, id_materia=1))
 
         self.quimica.draw(self.screen)
         if self.quimica.check_button():   
-            self.transition_call(TelaPergunta(self.screen, self.transition_call))          
+            self.transition_call(TelaPergunta(self.screen, self.transition_call, id_materia=2))          

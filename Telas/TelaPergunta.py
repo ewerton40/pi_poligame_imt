@@ -3,21 +3,23 @@ import json
 import random
 from UI.Botao import Botao
 from UI.Pontuacao import Pontuacao
+from Telas.Tela import Tela
 from Telas.TelaAcerto import TelaAcerto
 import Pergunta # Classe que gerencia perguntas
 from util import WINDOW_SIZE, break_line, DATABASE, USER
 
 class TelaPergunta(Tela):
-    def __init__(self, screen, transition_call):
+    def __init__(self, screen, transition_call, id_materia):
         super().__init__(screen, transition_call)
         self.screen = screen
         self.ended = False
         self.images = {}
         self.texts = []
         self.answer_btn = []
+        self.id_materia = id_materia
 
     def load(self):
-        questions = DATABASE.get_questoes_por_materia_json()
+        questions = DATABASE.get_questoes_por_materia_json(self.id_materia)
         perguntas = json.loads(questions)
         random.shuffle(perguntas)
         selected_questions = perguntas[:10]
@@ -42,7 +44,7 @@ class TelaPergunta(Tela):
         for text in self.texts:
             text.draw(self.screen)
 
-        level_str = f'Level {self.len_questions - len(self.pool.questions) + 1} / {self.len_questions}'
+        level_str = f'Pergunta {self.len_questions - len(self.pool.questions) + 1} / {self.len_questions}'
         font = pygame.font.Font("Arial", 32)
         level_text = font.render(level_str, True, pygame.Color("gray"))
         self.screen.blit(level_text, (WINDOW_SIZE[0] / 2 - level_text.get_width() / 2, 35))
@@ -71,7 +73,7 @@ class TelaPergunta(Tela):
                 self.pool.next_question()
 
             self.text = self.pool.get_question()
-            self.answers = self.pool.get_answers()
+            self.answers = self.pool.get_answers()  
 
             self.answer_btn = []
             for idx, a in enumerate(self.answers):

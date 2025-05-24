@@ -3,7 +3,7 @@ import pygame
 class Tela:
     def __init__(self, screen, transition_call):
         """
-        Inicializa um objeto Level.
+        Inicializa um objeto Tela.
 
         Args:
             screen (pygame.Surface): A superfície para renderizar o nível.

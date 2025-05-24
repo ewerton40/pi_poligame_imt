@@ -2,10 +2,12 @@ import pygame
 import Constantes
 from UI.Botao import Botao
 import pickle
+from Telas.Tela import Tela
 from Telas.TelaInicio import TelaInicio
 
-class TelaErro:
+class TelaErro(Tela):
     def __init__(self, screen, transition_call):
+        super().__init__(screen, transition_call)
         self.screen = screen
         self.transition_call = transition_call
         self.font = pygame.font.Font(None, 28)
