@@ -3,7 +3,7 @@ class GerenciadorPerguntas:
         self.perguntas = ["Pergunta Inicial 1", "Outra Pergunta"] # Exemplo inicial
 
     def adicionar_pergunta(self, texto_pergunta):
-        self.perguntas.append(texto_pergunta)
+        self.perguntas.append(str(texto_pergunta))
         print(f"Pergunta '{texto_pergunta}' adicionada.")
 
     def listar_perguntas(self):

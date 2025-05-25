@@ -147,14 +147,12 @@ class TelaLogin:
             self.mensagem_erro = "Preencha todos os campos!"
             return
 
-        senha_hash = sha256(senha.encode("utf-8")).hexdigest()
-
-        user = self.database.login_usuario(email, senha_hash)
+        user = self.database.login_usuario(email, senha)
         if user:
             if user["tipo"] == "Professor":
                 self.transition_call(TelaGerenciamento(self.screen, self.transition_call))  # ou sua tela de professor
             elif user["tipo"] == "Aluno":
-                self.transition_call(TelaInicio(self.screen, self.transition_call, user_data=user))
+                self.transition_call(TelaInicio(self.screen, self.transition_call, quit_game=self.quit, user_data=user))
 
         else:
             self.mensagem_erro = "Credenciais inválidas!"

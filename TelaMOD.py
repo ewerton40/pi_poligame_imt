@@ -7,13 +7,13 @@ def main():
     pygame.font.init()
 
     # Importações adiadas após inicialização de Pygame/fontes
-    from TelaAddPergunta import AddPerguntaTela
-    from RankingAlunos import JanelaRanking
-    from TelaAddAluno import TelaAdicionarAluno
-    from TelaGerenciamento import TelaGerenciamento
+    from Telas.TelaAddPergunta import AddPerguntaTela
+    from Classes.rankingAlunos import RankingTela
+    from Telas.TelaAddAluno import TelaAddAluno
+    from Telas.TelaGerenciamento import TelaGerenciamento
 
 
-    from Classes.botao import Botao
+    from UI.Botao import Botao
     from Classes.item_lista import ItemLista
     from Classes.gerenciador_perguntas import GerenciadorPerguntas
     from Classes.componentes import UIComponentes

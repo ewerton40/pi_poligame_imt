@@ -2,7 +2,7 @@ import pygame
 
 class AddPerguntaTela:
     def __init__(self):
-        self.largura, self.altura = 800, 600
+        self.largura, self.altura = 1280, 720
         self.tela = pygame.display.set_mode((self.largura, self.altura))
         pygame.display.set_caption("Adicionar Pergunta")
 

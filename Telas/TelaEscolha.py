@@ -33,7 +33,7 @@ class TelaEscolha(Tela):
 
 
     
-    def run(self):
+    def run(self, events):
         if self.is_loaded:
             self.screen.fill("black")
             self.screen.blit(self.images["background"], (self.pos, 0))

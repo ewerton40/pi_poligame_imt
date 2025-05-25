@@ -9,15 +9,15 @@ from UI.Botao import Botao
 from Telas.TelaEscolha import TelaEscolha
 
 class TelaInicio(Tela):
-    def __init__(self, screen, transition_call, quit_game):
+    def __init__(self, screen, transition_call, quit_game, user_data=None):
         super().__init__(screen, transition_call)
         self.quit = quit_game
         self.screen = screen
         self.pos = 0
         self.images = {}
         fonte = pygame.font.SysFont("Arial", 24)
-        self.sair = Botao((580, 470), (150, 50), pygame.Color("gray"), "Sair", fonte)
-        self.jogar = Botao((580, 400), (150, 50), pygame.Color("gray"), "Jogar", fonte)
+        self.sair = Botao((580, 470), (150, 50), pygame.Color("skyblue"), "Sair", fonte)
+        self.jogar = Botao((580, 400), (150, 50), pygame.Color("skyblue"), "Jogar", fonte)
         self.logo: pygame.Surface
        
         
@@ -31,7 +31,7 @@ class TelaInicio(Tela):
 
         self.is_loaded = all(image is not None for image in self.images.values())
 
-    def run(self):
+    def run(self, events):
         if self.is_loaded:
             self.screen.fill("black")
             self.screen.blit(self.images["background"], (self.pos, 0))

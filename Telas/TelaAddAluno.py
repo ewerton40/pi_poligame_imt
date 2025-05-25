@@ -3,7 +3,7 @@ from Telas.Tela import Tela
 from UI.Botao import Botao  # Sua nova classe Botao com draw() e check_button()
 
 class TelaAddAluno(Tela):
-    def __init__(self, screen, transition_call, largura=800, altura=600):
+    def __init__(self, screen, transition_call, largura=1280, altura=720):
         super().__init__(screen, transition_call)
         self.largura = largura
         self.altura = altura
