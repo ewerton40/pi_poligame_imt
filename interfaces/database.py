@@ -54,18 +54,22 @@ class Database():
             print(e)
 
         # Adiciona um usuário ao banco de dados.
-    def add_aluno(self, nome:str, email:str, password:str):
+    def add_aluno(self, email: str, password: str) -> bool: # Adicionei o tipo de retorno bool
         try:
-            sql = ("INSERT INTO Aluno (NomeAluno, EmailAluno, SenhaAluno) VALUES (%s, %s, %s)" % (nome, email, password))
-            self.cursor.execute(sql)
+            # A string SQL agora reflete a ausência de NomeAluno
+            sql = "INSERT INTO Aluno (EmailAluno, SenhaAluno) VALUES (%s, %s)"
+            self.cursor.execute(sql, (email, password)) # Passando os valores como uma tupla
             self.conexao.commit()
+            print("Aluno adicionado com sucesso ao banco.")
+            return True # Retorna True em caso de sucesso
         except Exception as e:
-            print(e)
+            print(f"Erro ao adicionar aluno: {e}")
+            return False # Retorna False em caso de erro
 
     # Atualiza um usuário no banco de dados.
     def update_aluno(self, nome:str, email:str, password:str):
         try:
-                sql = ("UPDATE Aluno SET NomeAluno= %s, EmailAluno=%s, SenhaAluno=%s" % (nome, email, password))
+                sql = ("UPDATE Aluno SET EmailAluno=%s, SenhaAluno=%s" % ( email, password))
                 self.cursor.execute(sql)
                 self.conexao.commit()
         except Exception as e:
