@@ -62,7 +62,7 @@ class TelaLogin:
         }
         self.is_loaded = all(image is not None for image in self.images.values())
 
-    def run(self):
+    def run(self, events):
         if self.is_loaded:
             self.screen.fill(self.cor_fundo)
             self.screen.blit(self.images["background"], (0, 0))
@@ -76,7 +76,7 @@ class TelaLogin:
             self.mostrar_mensagem_erro()
 
             # Processa eventos
-            self.tratar_eventos()
+            self.tratar_eventos(events)
 
             # Verifica ação do botão
             if self.botao_entrar.check_button():
@@ -101,8 +101,8 @@ class TelaLogin:
             erro = self.fonte_pequena.render(self.mensagem_erro, True, self.cor_erro)
             self.screen.blit(erro, self.posicao_erro)  # Posição definida por self.posicao_erro
 
-    def tratar_eventos(self):
-        for event in pygame.event.get():
+    def tratar_eventos(self, events):
+         for event in events:
             if event.type == pygame.QUIT:
                 self.quit()
 
@@ -115,21 +115,29 @@ class TelaLogin:
                 self.processar_tecla(event)
 
     def processar_clique(self, pos):
-        for campo in self.campos.values():
-            campo["ativo"] = campo["retangulo"].collidepoint(pos)
+        for nome, campo in self.campos.items():
+            campo["ativo"] = False
+
+        for nome, campo in self.campos.items():
+            if campo["retangulo"].collidepoint(pos):
+                campo["ativo"] = True
+                break
 
         # Limpa mensagem de erro ao interagir
         self.mensagem_erro = ""
 
     def processar_tecla(self, event):
-        for campo in self.campos.values():
+        print("Tecla pressionada:", event.unicode, event.key)
+        for nome, campo in self.campos.items():
             if campo["ativo"]:
+                print(f"Campo ativo: {nome}")
                 if event.key == pygame.K_BACKSPACE:
                     campo["texto"] = campo["texto"][:-1]
                 elif event.key == pygame.K_RETURN:
                     self.verificar_login()
                 else:
-                    campo["texto"] += event.unicode
+                    if event.unicode.isprintable():
+                        campo["texto"] += event.unicode
 
     def verificar_login(self):
         email = self.campos["usuario"]["texto"]

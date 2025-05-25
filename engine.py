@@ -19,7 +19,8 @@ class Engine():
         self.transition = 0
         self.active_scene: Tela | None = None
         self.previous_scene: Tela | None = None
-        self.next_scene = TelaLogin(self.screen, self.call_transition, self.quit, database=DATABASE)  # se usar essa config  
+        self.next_scene = TelaLogin(self.screen, self.call_transition, self.quit, database=DATABASE)  # se usar essa config 
+        self.next_scene.load() 
         self.loaded = False
 
     def run(self):
@@ -34,8 +35,8 @@ class Engine():
             if self.transition < 0:
                 self.transition += 1
 
-            # Creates an event loop
-            for event in pygame.event.get():
+            events = pygame.event.get()
+            for event in events:
                 match event.type:
                     case pygame.QUIT:
                         self.running = False
@@ -44,7 +45,8 @@ class Engine():
                             self.running = False
 
             if self.active_scene:
-                self.active_scene.run()
+                self.active_scene.run(events)
+
 
             if self.transition:
                 transition_surf = pygame.Surface(WINDOW_SIZE)
