@@ -2,17 +2,15 @@ import pygame
 import Constantes   
 from UI.Botao import Botao
 from hashlib import sha256
-import sys
-import os
-from Telas import TelaAdmin
+from Telas.TelaInicio import TelaInicio
+from Telas.TelaGerenciamento import TelaGerenciamento
 
 class TelaLogin:
-    def __init__(self, screen, transition_call, quit_game, database, config_email):
+    def __init__(self, screen, transition_call, quit_game, database):
         self.screen = screen
         self.transition_call = transition_call
         self.quit = quit_game
         self.database = database
-        self.config_email = config_email
         self.is_loaded = False
 
         # Configurações de fonte
@@ -146,8 +144,9 @@ class TelaLogin:
         user = self.database.login_usuario(email, senha_hash)
         if user:
             if user["tipo"] == "Professor":
-                self.transition_call(TelaAdmin(self.screen, self.transition_call))  # ou sua tela de professor
+                self.transition_call(TelaGerenciamento(self.screen, self.transition_call))  # ou sua tela de professor
             elif user["tipo"] == "Aluno":
-                self.mensagem_erro = "Login como aluno. (Implemente a transição se desejar)"
+                self.transition_call(TelaInicio(self.screen, self.transition_call, user_data=user))
+
         else:
             self.mensagem_erro = "Credenciais inválidas!"

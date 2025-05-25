@@ -1,10 +1,10 @@
 import pygame
 from UI.Botao import Botao
-from ..Classes.item_lista import ItemLista
-from ..Classes.gerenciador_perguntas import GerenciadorPerguntas
+from Classes.item_lista import ItemLista
+from Classes.gerenciador_perguntas import GerenciadorPerguntas
 from Telas.TelaRanking import TelaRanking
-from TelaAddAluno import TelaAddAluno
-from TelaAddPergunta import AddPerguntaTela 
+from Telas.TelaAddAluno import TelaAddAluno
+from Telas.TelaAddPergunta import AddPerguntaTela 
 
 class TelaGerenciamento:
     def __init__(self):

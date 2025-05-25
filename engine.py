@@ -1,8 +1,8 @@
 import pygame
 from Telas.Tela import Tela
 from Telas.TelaInicio import TelaInicio
-from Telas.TelaPergunta import TelaPergunta
-from util import WINDOW_SIZE
+from Telas.TelaLogin import TelaLogin
+from util import WINDOW_SIZE, DATABASE
 
 class Engine():
     def __init__(self):
@@ -19,7 +19,7 @@ class Engine():
         self.transition = 0
         self.active_scene: Tela | None = None
         self.previous_scene: Tela | None = None
-        self.next_scene: Tela  = TelaInicio(self.screen, self.call_transition, self.quit)
+        self.next_scene = TelaLogin(self.screen, self.call_transition, self.quit, database=DATABASE)  # se usar essa config  
         self.loaded = False
 
     def run(self):
