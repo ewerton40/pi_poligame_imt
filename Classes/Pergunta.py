@@ -32,3 +32,12 @@ class Pergunta:
             if a["text"] == guess:
                 return True if a["correct"] == 1 else False
         return False
+
+    def get_id_pergunta_atual(self):
+        return self.questions[self.index]["id"]
+
+    def get_id_resposta_por_texto(self, texto):
+        for resposta in self.questions[self.index]["respostas"]:
+            if resposta["text"] == texto:
+                return resposta["id"]
+        return None

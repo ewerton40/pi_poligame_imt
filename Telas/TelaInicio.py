@@ -11,7 +11,7 @@ from Telas.TelaEscolha import TelaEscolha
 class TelaInicio(Tela):
     def __init__(self, screen, transition_call, quit_game, user_data=None):
         super().__init__(screen, transition_call)
-        self.quit = quit_game
+        self.quit_game = quit_game
         self.screen = screen
         self.pos = 0
         self.images = {}
@@ -19,6 +19,10 @@ class TelaInicio(Tela):
         self.sair = Botao((580, 470), (150, 50), pygame.Color("skyblue"), "Sair", fonte)
         self.jogar = Botao((580, 400), (150, 50), pygame.Color("skyblue"), "Jogar", fonte)
         self.logo: pygame.Surface
+        if user_data and user_data.get("tipo") == "Aluno":
+            self.id_aluno = user_data.get("id")
+        else:
+            self.id_aluno = None
        
         
     def load(self):
@@ -41,13 +45,13 @@ class TelaInicio(Tela):
 
             self.jogar.draw(self.screen)
             if self.jogar.check_button():
-                self.transition_call(TelaEscolha(self.screen, self.transition_call)) #Se o botão jogar for pressionado, muda para a tela de jogo
+                self.transition_call(TelaEscolha(self.screen, self.transition_call, self.quit_game, id_aluno= self.id_aluno)) #Se o botão jogar for pressionado, muda para a tela de jogo
 
            
 
             self.sair.draw(self.screen)
             if self.sair.check_button():
-                self.quit() #Se o botão sair for pressionado, fecha o jogo
+                self.quit_game() #Se o botão sair for pressionado, fecha o jogo
 
 
             if abs(self.pos) > Constantes.largura:

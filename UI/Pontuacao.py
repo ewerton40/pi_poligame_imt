@@ -8,7 +8,7 @@ class Pontuacao:
         self.score = 0
         self.score_incrementer = 10
         self.border_color = pygame.Color("white")
-        self.font = pygame.font("Arial", 32)
+        self.font = pygame.font.SysFont("Arial", 32)
 
 #Definindo a interface da pontuação.
     def draw(self, surface):

@@ -54,18 +54,18 @@ class Database():
             print(e)
 
         # Adiciona um usuário ao banco de dados.
-    def add_aluno(self, nome:str, email:str, password:str):
+    def add_aluno(self, email:str, password:str):
         try:
-            sql = ("INSERT INTO Aluno (NomeAluno, EmailAluno, SenhaAluno) VALUES (%s, %s, %s)" % (nome, email, password))
+            sql = ("INSERT INTO Aluno ( EmailAluno, SenhaAluno) VALUES (%s, %s)" % (email, password))
             self.cursor.execute(sql)
             self.conexao.commit()
         except Exception as e:
             print(e)
 
     # Atualiza um usuário no banco de dados.
-    def update_aluno(self, nome:str, email:str, password:str):
+    def update_aluno(self, email:str, password:str):
         try:
-                sql = ("UPDATE Aluno SET NomeAluno= %s, EmailAluno=%s, SenhaAluno=%s" % (nome, email, password))
+                sql = ("UPDATE Aluno SET EmailAluno=%s, SenhaAluno=%s" % (email, password))
                 self.cursor.execute(sql)
                 self.conexao.commit()
         except Exception as e:
@@ -286,41 +286,6 @@ class Database():
             print("Erro ao buscar matéria com perguntas:", e)
             return "Erro ao buscar matéria com perguntas"
         
-    def get_questoes_por_materia(self, idMateria: int) -> str:
-        try:
-            sql = """
-                SELECT
-                    p.idPerguntas AS question_id,
-                    p.Enunciado AS question_text,
-                    JSON_ARRAYAGG(
-                        JSON_OBJECT(
-                            'answer_id', r.idRespostas,
-                            'answer_text', r.TextoResposta,
-                            'is_true', pr.Correta
-                        )
-                    ) AS answers
-                FROM Perguntas p
-                JOIN Pergunta_Resposta pr ON p.idPerguntas = pr.Perguntas_idPerguntas
-                JOIN Respostas r ON pr.Respostas_idRespostas = r.idRespostas
-                WHERE p.Materia_idMateria = %s
-                GROUP BY p.idPerguntas
-            """
-            self.cursor.execute(sql, (idMateria,))
-            questions = self.cursor.fetchall()
-            
-            questions_json = []
-            for question in questions:
-                answers = json.loads(question[2]) if question[2] else []
-                questions_json.append({
-                    "id": question[0],
-                    "question": question[1],
-                    "answers": answers
-                })
-            return json.dumps(questions_json)
-
-        except Exception as e:
-            print("Erro ao buscar questões por matéria:", e)
-            return "Error ao buscar questões por matéria!"
 
 
     def get_questoes_por_materia_json(self, id_materia: int) -> str:
@@ -368,3 +333,91 @@ class Database():
         except Exception as e:
             print("Erro ao buscar questões por matéria:", e)
             return "Erro"
+        
+
+    def criar_dica_para_partida(self, id_partida):
+        try:
+            cursor = self.conexao.cursor()
+            cursor.execute(
+                "INSERT INTO Dica (IdPartida, MeioaMeio, PularDica) VALUES (%s, FALSE, FALSE)",
+                (id_partida,)
+            )
+            self.conexao.commit()
+            return True
+        except Exception as e:
+            print("Erro ao criar dica para a partida:", e)
+            return False
+
+    def get_dica_por_partida(self, id_partida):
+        try:
+            cursor = self.conexao.cursor(dictionary=True)
+            cursor.execute(
+                "SELECT * FROM Dica WHERE IdPartida = %s", (id_partida,)
+            )
+            return cursor.fetchone()
+        except Exception as e:
+            print("Erro ao obter dica da partida:", e)
+            return None
+
+    def usar_meio_a_meio(self, id_partida):
+        try:
+            cursor = self.conexao.cursor()
+            cursor.execute(
+                "UPDATE Dica SET MeioaMeio = TRUE WHERE IdPartida = %s", (id_partida,)
+            )
+            self.conexao.commit()
+            return True
+        except Exception as e:
+            print("Erro ao marcar meio a meio como usado:", e)
+            return False
+
+    def usar_pular_dica(self, id_partida):
+        try:
+            cursor = self.conexao.cursor()
+            cursor.execute(
+                "UPDATE Dica SET PularDica = TRUE WHERE IdPartida = %s", (id_partida,)
+            )
+            self.conexao.commit()
+            return True
+        except Exception as e:
+            print("Erro ao marcar pular dica como usado:", e)
+            return False
+        
+    def criar_partida(self, id_aluno: int, id_materia: int):
+        try:
+            sql = "INSERT INTO Partida (PontuacaoPartida, Materia_idMateria, Aluno_idAluno) VALUES (0, %s, %s)"
+            self.cursor.execute(sql, (id_materia, id_aluno))
+            self.conexao.commit()
+            return self.cursor.lastrowid  # <- Aqui retorna o id gerado
+        except Exception as e:
+            print("Erro ao criar partida:", e)
+            return None
+
+    def registrar_resposta(self, id_partida: int, id_aluno: int, id_pergunta: int, id_resposta: int):
+        try:
+            sql = """
+                INSERT INTO JogoAluno (Aluno_idAluno, Perguntas_idPerguntas, Respostas_idRespostas, Partida_idPartida)
+                VALUES (%s, %s, %s, %s)
+            """
+            self.cursor.execute(sql, (id_aluno, id_pergunta, id_resposta, id_partida))
+            self.conexao.commit()
+        except Exception as e:
+            print("Erro ao registrar resposta do aluno:", e)
+
+
+    def add_pontuacao_real(self, id_partida, acertos):
+        try:
+            cursor = self.conexao.cursor()
+            cursor.execute("UPDATE Partida SET pontuacao = %s WHERE idPartida = %s", (acertos, id_partida))
+            self.conexao.commit()
+        except Exception as e:
+            print(f"Erro ao salvar pontuação real: {e}")
+            
+
+
+
+
+
+
+
+

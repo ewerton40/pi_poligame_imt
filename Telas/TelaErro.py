@@ -6,14 +6,14 @@ from Telas.Tela import Tela
 from Telas.TelaInicio import TelaInicio
 
 class TelaErro(Tela):
-    def __init__(self, screen, transition_call):
+    def __init__(self, screen, transition_call, checkpoint):
         super().__init__(screen, transition_call)
         self.screen = screen
         self.transition_call = transition_call
         self.font = pygame.font.Font(None, 28)
         self.texto_erro = "Você errou a pergunta!"
         self.texto_informacao = "Você perdeu os pontos e voltou ao último checkpoint!"
-
+        self.pontuacao = checkpoint
         self.fundo_imagem = pygame.image.load("imagens/erro.jpg")
         self.fundo_imagem = pygame.transform.scale(
             self.fundo_imagem, (Constantes.largura, Constantes.altura)
