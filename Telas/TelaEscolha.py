@@ -48,10 +48,12 @@ class TelaEscolha(Tela):
 
         self.portugues.draw(self.screen)
         if self.portugues.check_button():
+            self.id_materia = 1 
             id_partida = DATABASE.criar_partida(self.id_aluno, self.id_materia)
-            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, id_partida=id_partida))
+            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida))
 
         self.quimica.draw(self.screen)
         if self.quimica.check_button():
+            self.id_materia = 2
             id_partida = DATABASE.criar_partida(self.id_aluno, self.id_materia)   
-            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, id_partida=id_partida))          
+            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida))          

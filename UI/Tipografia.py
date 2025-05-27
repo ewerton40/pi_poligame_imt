@@ -6,7 +6,7 @@ class Tipografia:
         self.pos = pos
         self.text = text
         self.color = color
-        self.font = pygame.font.Font("Arial", 24)
+        self.font = pygame.font.SysFont("Arial", 24)
 
     def draw(self, surface):
         text_surface = self.font.render(self.text, True, self.color)

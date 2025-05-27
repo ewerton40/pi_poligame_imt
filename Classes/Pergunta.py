@@ -4,6 +4,7 @@ class Pergunta:
     def __init__(self, questions: list[dict]):
         print(questions)
         self.questions = questions
+        self.index = 0
         self.current_question = 0
 
     def get_question(self) -> str:

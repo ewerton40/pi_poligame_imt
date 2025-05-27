@@ -39,6 +39,6 @@ def break_line(text:str, start_pos: pygame.Vector2, max_size=300) -> list[Tipogr
 
         total_w += t.get_width()
 
-        return texts
+    return texts
 
 USER = User(None)
