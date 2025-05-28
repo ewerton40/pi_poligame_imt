@@ -72,7 +72,7 @@ class TelaPergunta(Tela):
         level_str = f'Pergunta {self.len_questions - len(self.pool.questions) + 1} / {self.len_questions}'
         font = pygame.font.SysFont(None, 32)
         level_text = font.render(level_str, True, pygame.Color("white"))
-        self.screen.blit(level_text, (WINDOW_SIZE[0] / 2 - level_text.get_width() / 2, 35))
+        self.screen.blit(level_text, (WINDOW_SIZE[0] / 2 - level_text.get_width() / 2, 50))
 
         self.score.draw(self.screen)
         self.meio_a_meio_btn.draw(self.screen)
@@ -84,18 +84,6 @@ class TelaPergunta(Tela):
             if answer_btn.check_button():
                 texto_resposta = answer_btn.text
                 correta = self.pool.is_correct_answer(texto_resposta)
-
-                # REGISTRO NO BANCO
-                id_pergunta = self.pool.get_id_pergunta_atual()
-                id_resposta = self.pool.get_id_resposta_por_texto(texto_resposta)
-                id_aluno = USER.get_id()  # De onde já está pegando no sistema
-
-                DATABASE.registrar_resposta(
-                    id_partida=self.id_partida,
-                    id_aluno=id_aluno,
-                    id_pergunta=id_pergunta,
-                    id_resposta=id_resposta
-                )
     
                 if correta:
                     self.next_question(correct=True)
@@ -103,8 +91,10 @@ class TelaPergunta(Tela):
                     # Redireciona para a TelaErro
                     from Telas.TelaErro import TelaErro
                     self.score.score = self.checkpoint
-                    self.transition_call(TelaErro(self.screen, self.transition_call, self.checkpoint))
-
+                    print("Erro! Transicionando para TelaErro")
+                    self.transition_call(TelaErro(self.screen, self.transition_call, self.checkpoint, self.quit_game))
+                    return 
+            
         # Verifica clique no botão parar
         if self.parar_btn.check_button():
             self.encerrar_jogo()

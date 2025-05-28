@@ -26,6 +26,10 @@ class TelaAcerto(Tela):
         self.pontuacao = 0
         self.incremento = 10000
 
+
+    def load(self):
+        self.is_loaded = True
+
     def draw(self):
         self.screen.blit(self.fundo_imagem, (0, 0))
 

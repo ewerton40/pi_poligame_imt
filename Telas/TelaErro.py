@@ -1,15 +1,15 @@
 import pygame
 import Constantes
 from UI.Botao import Botao
-import pickle
 from Telas.Tela import Tela
 from Telas.TelaInicio import TelaInicio
 
 class TelaErro(Tela):
-    def __init__(self, screen, transition_call, checkpoint):
+    def __init__(self, screen, transition_call, checkpoint, quit_game):
         super().__init__(screen, transition_call)
-        self.screen = screen
+        self.screen = screen        
         self.transition_call = transition_call
+        self.quit_game = quit_game
         self.font = pygame.font.Font(None, 28)
         self.texto_erro = "Você errou a pergunta!"
         self.texto_informacao = "Você perdeu os pontos e voltou ao último checkpoint!"
@@ -23,16 +23,15 @@ class TelaErro(Tela):
 
         # Apenas o botão "Voltar ao Início"
         self.botao_inicio = Botao(
-            (875, 650), (200, 45), pygame.Color("gray"),
+            (875, 650), (200, 45), pygame.Color("skyblue"),
             "Voltar ao Início", fonte_botao
         )
 
-        self.pontuacao = 0
-        self.checkpoint = 0
-        self.incremento = 10000
-        self.checkpoints = [i * 20000 for i in range(1, 51)]
+    def load(self):
+        # Se quiser carregar outras imagens, faça aqui
+        self.is_loaded = True  # indica que carregou corretamente
 
-    def desenhar_erro(self):
+    def run(self, events):
         self.screen.blit(self.fundo_imagem, (0, 0))
 
         texto_erro_surface = self.font.render(self.texto_erro, True, pygame.Color("red"))
@@ -49,36 +48,9 @@ class TelaErro(Tela):
 
         self.botao_inicio.draw(self.screen)
 
-        if self.botao_inicio.check_button():
-            self.transition_call(TelaInicio(self.screen, self.transition_call, pygame.quit))
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if self.botao_inicio.rect.collidepoint(event.pos):
+                    # Volta para tela inicial
+                    self.transition_call(TelaInicio(self.screen, self.transition_call, self.quit_game))
 
-    def atualizar_pontuacao(self, resposta_correta: bool):
-        if resposta_correta:
-            self.pontuacao += self.incremento
-            if self.pontuacao >= self.checkpoints[self.checkpoint]:
-                self.checkpoint += 1
-        else:
-            self.pontuacao = self.checkpoints[self.checkpoint - 1] if self.checkpoint > 0 else 0
-
-    def salvar_pontuacao(self):
-        with open("pontos_salvos.pkl", "wb") as file:
-            pickle.dump(self.pontuacao, file)
-
-    def exibir_tela_erro(self):
-        rodando_erro = True
-        while rodando_erro:
-            for evento in pygame.event.get():
-                if evento.type == pygame.QUIT:
-                    rodando_erro = False
-                    return False
-                if evento.type == pygame.MOUSEBUTTONDOWN:
-                    pos_mouse = pygame.mouse.get_pos()
-                    if self.botao_inicio.rect.collidepoint(pos_mouse):
-                        rodando_erro = False
-                        self.transition_call(TelaInicio(self.screen, self.transition_call, pygame.quit))
-                        return False
-
-            self.screen.fill(pygame.Color("black"))
-            self.desenhar_erro()
-            pygame.display.flip()
-        return True
