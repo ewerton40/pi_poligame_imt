@@ -8,7 +8,7 @@ def main():
 
     # Importações adiadas após inicialização de Pygame/fontes
     from Telas.TelaAddPergunta import AddPerguntaTela
-    from Classes.rankingAlunos import RankingTela
+    from Telas.TelaAddProfessor import TelaAddProfessor
     from Telas.TelaAddAluno import TelaAddAluno
     from Telas.TelaGerenciamento import TelaGerenciamento
 

@@ -1,35 +1,164 @@
 import pygame
-from Classes.rankingAlunos import RankingTela
+import os
+from interfaces.database import Database # Importa a CLASSE Database
 
-class TelaRanking:
-    def __init__(self, tela_principal):
+class RankingTela:
+    def __init__(self,tela_principal=None):
         self.tela_principal = tela_principal
-        self.ranking_data = [
-            {"nome": "João", "pontuacao": "$25071", "identificacao": "25.00873-1", "turma": "t3sub2"},
-            {"nome": "Maria", "pontuacao": "$23456", "identificacao": "25.00123-4", "turma": "t1sub1"},
-            {"nome": "Carlos", "pontuacao": "$21890", "identificacao": "25.00987-6", "turma": "t2sub3"},
-            {"nome": "Ana", "pontuacao": "$20123", "identificacao": "25.00543-2", "turma": "t3sub1"},
-            {"nome": "Pedro", "pontuacao": "$18765", "identificacao": "25.00234-5", "turma": "t1sub2"},
-            {"nome": "Sofia", "pontuacao": "$17432", "identificacao": "25.00678-9", "turma": "t2sub2"},
-            {"nome": "Lucas", "pontuacao": "$16098", "identificacao": "25.00345-8", "turma": "t3sub3"},
-            {"nome": "Isabela", "pontuacao": "$15789", "identificacao": "25.00789-0", "turma": "t1sub3"},
-            {"nome": "Gabriel", "pontuacao": "$14567", "identificacao": "25.00456-3", "turma": "t2sub1"},
-            {"nome": "Manuela", "pontuacao": "$13234", "identificacao": "25.00890-1", "turma": "t3sub2"},
-            # Adicione mais dados aqui
-        ]
-        self.ranking_tela = RankingTela(self.tela_principal, self.ranking_data)
+        self.largura_da_tela = 1280
+        self.altura_da_tela = 720
+        self.tela_ranking = pygame.Surface((self.largura_da_tela, self.altura_da_tela))
+        self.rect_tela_ranking = self.tela_ranking.get_rect(center=self.tela_principal.get_rect().center)
+
+        self.ranking_data = []
+
+        # Instancia a classe Database para gerenciar as operações de DB
+        self.db_manager = Database() 
+        # É uma boa prática conectar aqui, ou no início do programa principal,
+        # e fechar a conexão quando o programa terminar.
+        self.db_manager.connect() # Conecta ao banco de dados ao inicializar a tela de ranking
+
+        self.margem = 10
+        self.altura_cabecalho = 40
+        self.espacamento_cabecalho = 5
+        self.largura_coluna_email = (self.largura_da_tela - 2 * self.margem - 2 * self.espacamento_cabecalho) // 3
+        self.largura_coluna_pontuacao = self.largura_coluna_email
+        self.largura_coluna_materia = self.largura_coluna_email
+        
+        self.rects_cabecalho = []
+        x_atual = self.margem
+        for texto in ["EMAIL DO ALUNO", "PONTUAÇÃO", "MATÉRIA"]:
+            if texto == "EMAIL DO ALUNO":
+                largura = self.largura_coluna_email
+            elif texto == "PONTUAÇÃO":
+                largura = self.largura_coluna_pontuacao
+            else: # MATÉRIA
+                largura = self.largura_coluna_materia
+            
+            rect = pygame.Rect(
+                x_atual,
+                self.margem,
+                largura,
+                self.altura_cabecalho
+            )
+            self.rects_cabecalho.append((rect, texto))
+            x_atual += largura + self.espacamento_cabecalho
+
+        self.altura_linha = 30
+        self.espacamento_linha = 5
+        self.margem_topo_lista = self.margem + self.altura_cabecalho + 2 * self.espacamento_cabecalho
+
+        self.largura_botao_fechar = 80
+        self.altura_botao_fechar = 25
+        self.rect_botao_fechar = pygame.Rect(
+            self.largura_da_tela - self.margem - self.largura_botao_fechar,
+            self.altura_da_tela - self.margem - self.altura_botao_fechar,
+            self.largura_botao_fechar,
+            self.altura_botao_fechar
+        )
+
+        self.carregar_dados_ranking()
+
+    def carregar_dados_ranking(self):
+        """Carrega os dados do ranking do banco de dados e formata para exibição."""
+        # Chama o método get_rank_partidas da instância db_manager
+        dados_brutos = self.db_manager.get_rank_partidas()
+        self.ranking_data = []
+        for email, pontuacao, materia in dados_brutos:
+            self.ranking_data.append({
+                "email": email,
+                "pontuacao": str(pontuacao),
+                "materia": materia
+            })
+
+    def desenhar_texto_centralizado(self, tela, texto, tamanho_fonte, cor, rect):
+        fonte = pygame.font.Font(None, tamanho_fonte)
+        surf = fonte.render(texto, True, cor)
+        texto_rect = surf.get_rect(center=rect.center)
+        tela.blit(surf, texto_rect)
+
+    def desenhar_cabecalhos(self):
+        cor_fundo = pygame.Color("dimgray")
+        cor_texto = pygame.Color("white")
+        for rect, texto in self.rects_cabecalho:
+            pygame.draw.rect(self.tela_ranking, cor_fundo, rect, border_radius=3)
+            self.desenhar_texto_centralizado(self.tela_ranking, texto, 22, cor_texto, rect)
+
+    def desenhar_botao_fechar(self):
+        cor_botao = pygame.Color("saddlebrown")
+        cor_texto = pygame.Color("white")
+        pygame.draw.rect(self.tela_ranking, cor_botao, self.rect_botao_fechar, border_radius=3)
+        self.desenhar_texto_centralizado(self.tela_ranking, "FECHAR", 20, cor_texto, self.rect_botao_fechar)
+
+    def desenhar_ranking_data(self):
+        y = self.margem_topo_lista
+        cor_linha_fundo = pygame.Color(100, 100, 100, 150) 
+        cor_texto = pygame.Color("white")
+        fonte = pygame.font.Font(None, 28) 
+
+        for data in self.ranking_data:
+            pygame.draw.rect(
+                self.tela_ranking,
+                cor_linha_fundo,
+                (self.margem, y, self.largura_da_tela - 2 * self.margem, self.altura_linha),
+                border_radius=2
+            )
+            
+            x_email = self.margem + 5
+            x_pontuacao = self.margem + self.largura_coluna_email + self.espacamento_cabecalho + 5
+            x_materia = self.margem + self.largura_coluna_email + self.espacamento_cabecalho + \
+                                     self.largura_coluna_pontuacao + self.espacamento_cabecalho + 5
+
+            surf_email = fonte.render(data["email"], True, cor_texto)
+            y_texto_email = y + (self.altura_linha - surf_email.get_height()) // 2
+            self.tela_ranking.blit(surf_email, (x_email, y_texto_email))
+
+            surf_pontuacao = fonte.render(data["pontuacao"], True, cor_texto)
+            y_texto_pontuacao = y + (self.altura_linha - surf_pontuacao.get_height()) // 2
+            self.tela_ranking.blit(surf_pontuacao, (x_pontuacao, y_texto_pontuacao))
+            
+            surf_materia = fonte.render(data["materia"], True, cor_texto)
+            y_texto_materia = y + (self.altura_linha - surf_materia.get_height()) // 2
+            self.tela_ranking.blit(surf_materia, (x_materia, y_texto_materia))
+
+            y += self.altura_linha + self.espacamento_linha
 
     def executar(self):
-        """Exibe a tela de ranking e retorna quando fechar."""
-        return self.ranking_tela.exibir()
+        """Exibe a tela de ranking e gerencia os eventos."""
+        rodando = True
+        while rodando:
+            for evento in pygame.event.get():
+                if evento.type == pygame.QUIT:
+                    # Close the database connection when exiting
+                    self.db_manager.close()
+                    return False
+                if evento.type == pygame.MOUSEBUTTONDOWN:
+                    pos = pygame.mouse.get_pos()
+                    pos_rel = (pos[0] - self.rect_tela_ranking.left, pos[1] - self.rect_tela_ranking.top)
+                    if self.rect_botao_fechar.collidepoint(pos_rel):
+                        # Close the database connection when closing the ranking screen
+                        self.db_manager.close()
+                        return True
+
+            self.tela_ranking.fill(pygame.Color("lightgray"))
+            self.desenhar_cabecalhos()
+            self.desenhar_botao_fechar()
+            self.desenhar_ranking_data()
+            
+            self.tela_principal.blit(self.tela_ranking, self.rect_tela_ranking)
+            pygame.display.flip()
+        
+        # Ensure connection is closed even if loop exits unexpectedly
+        self.db_manager.close()
+        return True
 
 
 if __name__ == '__main__':
     pygame.init()
-    tela_teste = pygame.display.set_mode((800, 600))
-    pygame.display.set_caption("Tela de Ranking Teste")
+    tela_principal = pygame.display.set_mode((1280, 720))
+    pygame.display.set_caption("Ranking de Partidas")
 
-    ranking = TelaRanking(tela_teste)
-    ranking.executar()
+    ranking_tela = RankingTela(tela_principal)
+    ranking_tela.executar()
 
     pygame.quit()

@@ -6,13 +6,13 @@ from interfaces.database import Database
 db = Database()
 db.connect()  # Certifique-se de que sua classe aceita o parâmetro
 
-class TelaAddAluno(Tela):
+class TelaAddProfessor(Tela):
     def __init__(self, screen, transition_call, largura=1280, altura=720):
         super().__init__(screen, transition_call)
         self.largura = largura
         self.altura = altura
         self.tela = pygame.Surface((largura, altura))
-        pygame.display.set_caption("Adicionar Aluno")
+        pygame.display.set_caption("Adicionar Professor")
 
         self.fonte = pygame.font.Font(None, 30)
 
@@ -78,9 +78,9 @@ class TelaAddAluno(Tela):
                 senha = self.caixas[1]["texto"].strip()
 
                 if email and senha:
-                    sucesso = db.add_aluno(email, senha)  # <-- usa sua função aqui!
+                    sucesso = db.add_professor(email, senha)  # <- Aqui a função é usada
                     if sucesso:
-                        self.retorno = "aluno_adicionado"
+                        self.retorno = "professor_adicionado"
                     else:
                         self.retorno = "erro"
                     self.rodando = False

@@ -7,114 +7,111 @@ load_dotenv()
 
 class Database():
     def __init__(self):
-        self.host =os.getenv("HOST")
+        self.host = os.getenv("HOST")
         self.user = os.getenv("USER")
         self.password = os.getenv("PASSWORD")
         self.database = os.getenv("DATABASE")  
         self.port = os.getenv("PORT")
+        self.conexao = None  # Initialize conexao and cursor
+        self.cursor = None
 
-        # Tenta fazer a conexão com o banco de dados.
+    # Tenta fazer a conexão com o banco de dados.
     def connect(self):
         try:
-            self.conexao = mysql.connector.connect(
-                user = self.user,
-                password = self.password,
-                host = self.host,
-                database = self.database,
-                port = self.port,
-            )
-            print("Conexão bem sucedida!")
-            self.cursor = self.conexao.cursor(buffered=True)
+            if self.conexao is None or not self.conexao.is_connected():
+                self.conexao = mysql.connector.connect(
+                    user=self.user,
+                    password=self.password,
+                    host=self.host,
+                    database=self.database,
+                    port=self.port,
+                )
+                self.cursor = self.conexao.cursor(buffered=True)
+                print("Conexão bem sucedida!")
             return self.conexao
         except mysql.connector.Error as err:
             print(f"Falha na conexão! {err}")
+            self.conexao = None
+            self.cursor = None
             return None
 
-        # Pega e retorna o usuário do banco de dados.
-    def get_aluno(self, email:str, password:str):
+    def close(self):
+        if self.cursor:
+            self.cursor.close()
+            self.cursor = None
+        if self.conexao and self.conexao.is_connected():
+            self.conexao.close()
+            self.conexao = None
+            print("Conexão com o banco de dados fechada.")
+
+    # Pega e retorna o usuário do banco de dados.
+    def get_aluno(self, email: str, password: str):
         try:
-            sql = ("SELECT idAluno, EmailAluno, SenhaAluno FROM Aluno WHERE EmailAluno='%s' AND SenhaAluno='%s'" % (email, password))
-            self.cursor.execute(sql)
-            self.conexao.commit()
+            # Ensure connection is active
+            self.connect() 
+            sql = ("SELECT idAluno, EmailAluno, SenhaAluno FROM Aluno WHERE EmailAluno=%s AND SenhaAluno=%s")
+            self.cursor.execute(sql, (email, password)) # Use parameterized query
+            # self.conexao.commit() # No need to commit for SELECT statements
             user = self.cursor.fetchone()
             return user
         except Exception as e:
             print(e)
             return None
-            
+        # You might want to close connection here or manage it externally if this is a short-lived query
+
     # Pega e retorna o email do usuário do banco de dados.
-    def get_aluno_email(self, email:str):
+    def get_aluno_email(self, email: str):
         try:
-            sql = ("SELECT Aluno.EmailAluno FROM Aluno WHERE Aluno.EmailAluno='%s'" % email)
-            self.cursor.execute(sql)
-            self.conexao.commit()
+            self.connect()
+            sql = ("SELECT Aluno.EmailAluno FROM Aluno WHERE Aluno.EmailAluno=%s")
+            self.cursor.execute(sql, (email,)) # Use parameterized query
+            # self.conexao.commit()
             email = self.cursor.fetchone()[0]
             return email
         except Exception as e:
             print(e)
+            return None
+        # You might want to close connection here or manage it externally if this is a short-lived query
 
-        # Adiciona um usuário ao banco de dados.
-    def add_aluno(self, email: str, password: str) -> bool: # Adicionei o tipo de retorno bool
+    # Adiciona um usuário ao banco de dados.
+    def add_aluno(self, email: str, password: str) -> bool:
         try:
-            # A string SQL agora reflete a ausência de NomeAluno
+            self.connect()
             sql = "INSERT INTO Aluno (EmailAluno, SenhaAluno) VALUES (%s, %s)"
-            self.cursor.execute(sql, (email, password)) # Passando os valores como uma tupla
+            self.cursor.execute(sql, (email, password))
             self.conexao.commit()
             print("Aluno adicionado com sucesso ao banco.")
-            return True # Retorna True em caso de sucesso
+            return True
         except Exception as e:
             print(f"Erro ao adicionar aluno: {e}")
-            return False # Retorna False em caso de erro
+            return False
+        # You might want to close connection here or manage it externally
 
     # Atualiza um usuário no banco de dados.
-    def update_aluno(self, nome:str, email:str, password:str):
+    def update_aluno(self, email: str, password: str, old_email: str): # Added old_email to identify the record
         try:
-                sql = ("UPDATE Aluno SET EmailAluno=%s, SenhaAluno=%s" % ( email, password))
-                self.cursor.execute(sql)
-                self.conexao.commit()
-        except Exception as e:
-            print(e)
-
-    # Deleta um usuário do banco de dados.
-    def delete_aluno(self, email:str):
-        try:
-            sql = ("DELETE FROM Aluno WHERE EmailAluno = '%s'" % email)
-            self.cursor.execute(sql)
+            self.connect()
+            sql = "UPDATE Aluno SET EmailAluno=%s, SenhaAluno=%s WHERE EmailAluno=%s"
+            self.cursor.execute(sql, (email, password, old_email)) # Parameterized query
             self.conexao.commit()
         except Exception as e:
             print(e)
+        # You might want to close connection here or manage it externally
+
+    # Deleta um usuário do banco de dados.
+    def delete_aluno(self, email: str):
+        try:
+            self.connect()
+            sql = ("DELETE FROM Aluno WHERE EmailAluno = %s")
+            self.cursor.execute(sql, (email,)) # Parameterized query
+            self.conexao.commit()
+        except Exception as e:
+            print(e)
+        # You might want to close connection here or manage it externally
 
     def get_all_questoes_json(self) -> str:
         try:
-            """
-                Create an sql query that returns all questions and their answers like this:
-                {
-                    "id": 0,
-                    "question": "Qual dessas opções é um tópico que deve ser abordado no parágrafo introdutório de redação modelo ENEM?",
-                    "answers": [
-                    {
-                        "id": 0,
-                        "text": "Repertório de abertura",
-                        "correct": true
-                    },
-                    {
-                        "id": 1,
-                        "text": "Tese",
-                        "correct": false
-                    },
-                    {
-                        "id": 2,
-                        "text": "Conclusão do texto",
-                        "correct": false
-                    },
-                    {
-                        "id": 3,
-                        "text": "Argumentação detalhada",
-                        "correct": false
-                    }
-                    ]
-                },
-            """
+            self.connect()
             sql = ("""
                 SELECT
                     p.idPerguntas AS question_id,
@@ -134,7 +131,7 @@ class Database():
 
             self.cursor.execute(sql)
             questions = self.cursor.fetchall()
-            self.conexao.commit()
+            # self.conexao.commit() # No need to commit for SELECT
             questions_json = []
             for question in questions:
                 question_dict = {
@@ -156,41 +153,58 @@ class Database():
         except Exception as e:
             print(e)
             return "Error ao buscar perguntas!"
-    
-     # Adiciona uma questão ao banco de dados.
+        # You might want to close connection here or manage it externally
+
+    # Adiciona uma questão ao banco de dados.
     def add_questao(self, Enunciado: str, DificuldadePergunta: str, idMateria: int, alter1: str, alter2: str, alter3: str, answer: str):
         try:
-            self.cursor.execute("INSERT INTO Perguntas (Enunciado, DificuldadePergunta, Materia_idMateria) VALUES (%s, %s, %s)" % (Enunciado, DificuldadePergunta, idMateria))
+            self.connect()
+            self.cursor.execute(
+                "INSERT INTO Perguntas (Enunciado, DificuldadePergunta, Materia_idMateria) VALUES (%s, %s, %s)",
+                (Enunciado, DificuldadePergunta, idMateria)
+            )
             idPerguntas = self.cursor.lastrowid
-             
+
             alternativas = [
-                (alter1, False, idPerguntas),
-                (alter2, False, idPerguntas),
-                (alter3, False, idPerguntas),
-                (answer, True, idPerguntas)
+                (alter1, False),
+                (alter2, False),
+                (alter3, False),
+                (answer, True)
             ]
+
             for texto, correta in alternativas:
-                self.cursor.executemany("INSERT INTO Respostas (TextoResposta) VALUES (%s)" % (texto))
+                self.cursor.execute("INSERT INTO Respostas (TextoResposta) VALUES (%s)", (texto,))
                 idResposta = self.cursor.lastrowid
-                self.cursor.execute("INSERT INTO Pergunta_Resposta (Perguntas_idPerguntas, Respostas_idRespostas, Correta) VALUES (%s, %s, %s)", (idPerguntas, idResposta, correta))
-            
+                self.cursor.execute(
+                    "INSERT INTO Pergunta_Resposta (Perguntas_idPerguntas, Respostas_idRespostas, Correta) VALUES (%s, %s, %s)",
+                    (idPerguntas, idResposta, correta)
+                )
+
             self.conexao.commit()
             print("Questão adicionada!")
         except Exception as e:
-            print(e)
+            print("Erro ao adicionar questão no banco:", e)
+        # You might want to close connection here or manage it externally
 
-
-     # Deleta uma questão do banco de dados.
-    def delete_questao(self, idPerguntas:int):
+    # Deleta uma questão do banco de dados.
+    def delete_questao(self, idPerguntas: int):
         try:
-            sql = ("DELETE FROM Perguntas WHERE idPerguntas = '%s'" % (idPerguntas))
-            self.cursor.execute(sql)
+            self.connect()
+            # Delete related records in Pergunta_Resposta first to avoid foreign key constraints
+            sql_delete_pr = "DELETE FROM Pergunta_Resposta WHERE Perguntas_idPerguntas = %s"
+            self.cursor.execute(sql_delete_pr, (idPerguntas,))
+
+            # Then delete the question itself
+            sql_delete_q = "DELETE FROM Perguntas WHERE idPerguntas = %s"
+            self.cursor.execute(sql_delete_q, (idPerguntas,))
             self.conexao.commit()
         except Exception as e:
             print(e)
+        # You might want to close connection here or manage it externally
 
     def get_all_questoes(self):
         try:
+            self.connect()
             sql = ("""
                 SELECT 
                     p.idPerguntas AS pergunta_id,
@@ -227,14 +241,16 @@ class Database():
             """)
             self.cursor.execute(sql)
             questions = self.cursor.fetchall()
-            self.conexao.commit()
+            # self.conexao.commit() # No need to commit for SELECT
             return questions
         except Exception as e:
             print("Erro ao buscar perguntas:", e)
+            return []
+        # You might want to close connection here or manage it externally
 
-        
     def login_usuario(self, email: str, senha: str):
         try:
+            self.connect()
             # Verifica se é um aluno
             sql_aluno = ("SELECT idAluno FROM Aluno WHERE EmailAluno=%s AND SenhaAluno=%s")
             self.cursor.execute(sql_aluno, (email, senha))
@@ -253,9 +269,11 @@ class Database():
         except Exception as e:
             print("Erro ao tentar login:", e)
             return None 
-        
+        # You might want to close connection here or manage it externally
+
     def get_questao_materia(self) -> str:
         try:
+            self.connect()
             sql = """
                 SELECT 
                     m.idMateria AS materia_id,
@@ -274,7 +292,7 @@ class Database():
             """
             self.cursor.execute(sql)
             materias = self.cursor.fetchall()
-            self.conexao.commit()
+            # self.conexao.commit() # No need to commit for SELECT
 
             materias_json = []
             for materia in materias:
@@ -289,9 +307,11 @@ class Database():
         except Exception as e:
             print("Erro ao buscar matéria com perguntas:", e)
             return "Erro ao buscar matéria com perguntas"
+        # You might want to close connection here or manage it externally
         
     def get_questoes_por_materia(self, idMateria: int) -> str:
         try:
+            self.connect()
             sql = """
                 SELECT
                     p.idPerguntas AS question_id,
@@ -325,10 +345,11 @@ class Database():
         except Exception as e:
             print("Erro ao buscar questões por matéria:", e)
             return "Error ao buscar questões por matéria!"
-
+        # You might want to close connection here or manage it externally
 
     def get_questoes_por_materia_json(self, id_materia: int) -> str:
         try:
+            self.connect()
             sql = ("""
                 SELECT
                     p.idPerguntas AS question_id,
@@ -349,7 +370,7 @@ class Database():
 
             self.cursor.execute(sql, (id_materia,))
             perguntas = self.cursor.fetchall()
-            self.conexao.commit()
+            # self.conexao.commit() # No need to commit for SELECT
 
             questoes_json = []
             for pergunta in perguntas:
@@ -372,3 +393,71 @@ class Database():
         except Exception as e:
             print("Erro ao buscar questões por matéria:", e)
             return "Erro"
+        # You might want to close connection here or manage it externally
+
+    def get_rank_partidas(self): # <--- Adicione 'self' aqui para torná-la um método de instância
+        """
+        Busca o e-mail do aluno, a pontuação da partida e o nome da matéria do banco de dados.
+        Retorna uma lista de tuplas (EmailAluno, PontuacaoPartida, NomeMateria).
+        """
+        self.connect() # Garante que a conexão está ativa
+        try:
+            sql = """
+                SELECT
+                    A.EmailAluno,
+                    P.PontuacaoPartida,
+                    M.NomeMateria
+                FROM Aluno AS A
+                JOIN Partida AS P ON A.idAluno = P.Aluno_idAluno
+                JOIN Materia AS M ON P.Materia_idMateria = M.idMateria
+                ORDER BY P.PontuacaoPartida DESC;
+            """
+            self.cursor.execute(sql) # Usa o cursor da instância da classe
+            resultados = self.cursor.fetchall()
+            return resultados
+        except mysql.connector.Error as err:
+            print(f"Falha na consulta ao banco de dados: {err}")
+            return []
+        except Exception as e:
+            print(f"Erro inesperado ao buscar ranking: {e}")
+            return []
+        finally:
+            # Para métodos de busca que podem ser chamados várias vezes,
+            # é melhor deixar o fechamento da conexão para o chamador da classe Database.
+            # No entanto, se esta é uma operação isolada, você pode fechá-la aqui.
+            # Se for uma operação isolada, é ideal ter um `with` statement ou um método de close explícito.
+            # Por simplicidade para este método, vou omitir o close aqui, 
+            # assumindo que a instância de Database será fechada externamente
+            # quando não for mais necessária (por exemplo, no final do programa).
+            pass
+
+    def get_all_questions_details(self):
+        """
+        Retorna todas as perguntas com Enunciado, Materia_idMateria e DificuldadePergunta.
+        Retorna uma lista de dicionários, cada um representando uma pergunta.
+        """
+        try:
+            self.connect()
+            sql = """
+                SELECT 
+                    idPerguntas, 
+                    Enunciado, 
+                    DificuldadePergunta, 
+                    Materia_idMateria
+                FROM Perguntas;
+            """
+            self.cursor.execute(sql)
+            questions_raw = self.cursor.fetchall()
+            
+            questions_list = []
+            for q_id, enunciado, dificuldade, id_materia in questions_raw:
+                questions_list.append({
+                    "id": q_id,
+                    "enunciado": enunciado,
+                    "dificuldade": dificuldade,
+                    "materia_id": id_materia
+                })
+            return questions_list
+        except Exception as e:
+            print(f"Erro ao buscar detalhes das perguntas: {e}")
+            return []
