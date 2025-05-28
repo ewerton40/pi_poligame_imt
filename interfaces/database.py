@@ -187,20 +187,38 @@ class Database():
         # You might want to close connection here or manage it externally
 
     # Deleta uma questão do banco de dados.
+    
     def delete_questao(self, idPerguntas: int):
+        """
+        Deleta uma questão do banco de dados, incluindo suas associações e respostas.
+        """
         try:
             self.connect()
-            # Delete related records in Pergunta_Resposta first to avoid foreign key constraints
+
+            # 1. Obter os idRespostas associados a esta pergunta
+            sql_select_respostas = "SELECT Respostas_idRespostas FROM Pergunta_Resposta WHERE Perguntas_idPerguntas = %s"
+            self.cursor.execute(sql_select_respostas, (idPerguntas,))
+            respostas_ids = [row[0] for row in self.cursor.fetchall()]
+
+            # 2. Deletar registros da tabela Pergunta_Resposta
             sql_delete_pr = "DELETE FROM Pergunta_Resposta WHERE Perguntas_idPerguntas = %s"
             self.cursor.execute(sql_delete_pr, (idPerguntas,))
 
-            # Then delete the question itself
+            # 3. Deletar as respostas da tabela Respostas
+            if respostas_ids: # Garante que há IDs para deletar
+                # Cria uma string com placeholders para a cláusula IN
+                placeholders = ','.join(['%s'] * len(respostas_ids))
+                sql_delete_respostas = f"DELETE FROM Respostas WHERE idRespostas IN ({placeholders})"
+                self.cursor.execute(sql_delete_respostas, tuple(respostas_ids))
+
+            # 4. Deletar a questão da tabela Perguntas
             sql_delete_q = "DELETE FROM Perguntas WHERE idPerguntas = %s"
             self.cursor.execute(sql_delete_q, (idPerguntas,))
+            
             self.conexao.commit()
+            print(f"Questão {idPerguntas} e suas respostas associadas deletadas com sucesso!")
         except Exception as e:
-            print(e)
-        # You might want to close connection here or manage it externally
+            print(f"Erro ao deletar questão e respostas: {e}")
 
     def get_all_questoes(self):
         try:
