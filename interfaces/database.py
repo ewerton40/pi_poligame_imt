@@ -395,12 +395,24 @@ class Database():
 
     def registrar_resposta(self, id_partida: int, id_aluno: int, id_pergunta: int, id_resposta: int):
         try:
-            sql = """
+            # Verifica se já existe
+            sql_check = """
+                SELECT 1 FROM JogoAluno 
+                WHERE Aluno_idAluno = %s AND Perguntas_idPerguntas = %s AND Partida_idPartida = %s
+            """
+            self.cursor.execute(sql_check, (id_aluno, id_pergunta, id_partida))
+            if self.cursor.fetchone():
+                print("Resposta já registrada para esse aluno, pergunta e partida.")
+                return
+
+            # Se não existe, insere
+            sql_insert = """
                 INSERT INTO JogoAluno (Aluno_idAluno, Perguntas_idPerguntas, Respostas_idRespostas, Partida_idPartida)
                 VALUES (%s, %s, %s, %s)
             """
-            self.cursor.execute(sql, (id_aluno, id_pergunta, id_resposta, id_partida))
+            self.cursor.execute(sql_insert, (id_aluno, id_pergunta, id_resposta, id_partida))
             self.conexao.commit()
+
         except Exception as e:
             print("Erro ao registrar resposta do aluno:", e)
 
@@ -408,16 +420,7 @@ class Database():
     def add_pontuacao_real(self, id_partida, acertos):
         try:
             cursor = self.conexao.cursor()
-            cursor.execute("UPDATE Partida SET pontuacao = %s WHERE idPartida = %s", (acertos, id_partida))
+            cursor.execute("UPDATE Partida SET PontuacaoPartida = %s WHERE idPartida = %s", (acertos, id_partida))
             self.conexao.commit()
         except Exception as e:
             print(f"Erro ao salvar pontuação real: {e}")
-            
-
-
-
-
-
-
-
-

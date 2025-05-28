@@ -88,7 +88,7 @@ class TelaPergunta(Tela):
                 # REGISTRO NO BANCO
                 id_pergunta = self.pool.get_id_pergunta_atual()
                 id_resposta = self.pool.get_id_resposta_por_texto(texto_resposta)
-                id_aluno = USER["id"]  # De onde já está pegando no sistema
+                id_aluno = USER.get_id()  # De onde já está pegando no sistema
 
                 DATABASE.registrar_resposta(
                     id_partida=self.id_partida,

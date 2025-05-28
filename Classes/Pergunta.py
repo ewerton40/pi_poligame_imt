@@ -38,7 +38,7 @@ class Pergunta:
         return self.questions[self.index]["id"]
 
     def get_id_resposta_por_texto(self, texto):
-        for resposta in self.questions[self.index]["respostas"]:
+        for resposta in self.questions[self.index]["answers"]:
             if resposta["text"] == texto:
                 return resposta["id"]
         return None
