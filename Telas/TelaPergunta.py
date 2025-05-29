@@ -71,8 +71,8 @@ class TelaPergunta(Tela):
 
         level_str = f'Pergunta {self.len_questions - len(self.pool.questions) + 1} / {self.len_questions}'
         font = pygame.font.SysFont(None, 32)
-        level_text = font.render(level_str, True, pygame.Color("white"))
-        self.screen.blit(level_text, (WINDOW_SIZE[0] / 2 - level_text.get_width() / 2, 50))
+        perg_text = font.render(level_str, True, pygame.Color("white"))
+        self.screen.blit(perg_text, (WINDOW_SIZE[0] / 2 - perg_text.get_width() / 2, 50))
 
         self.score.draw(self.screen)
         self.meio_a_meio_btn.draw(self.screen)
@@ -101,17 +101,19 @@ class TelaPergunta(Tela):
             return      
         # DICA: Pular pergunta
         if self.pular_btn.check_click() and not self.usou_pular:
+            print("PULAR clicado")  
             self.usou_pular = True
             DATABASE.usar_pular_dica(self.id_partida)
             self.next_question()
 
         # DICA: Meio a Meio
         if self.meio_a_meio_btn.check_click() and not self.usou_meio:
+            print("MEIO A MEIO clicado")
             self.usou_meio = True
             DATABASE.usar_meio_a_meio(self.id_partida)
 
-            corretas = [a for a in self.answers if a["correta"]]
-            erradas = [a for a in self.answers if not a["correta"]]
+            corretas = [a for a in self.answers if a["correct"]]
+            erradas = [a for a in self.answers if not a["correct"]]
             if len(erradas) >= 2:
                 removidas = random.sample(erradas, 2)
                 self.answers = corretas + [e for e in erradas if e not in removidas]
@@ -120,7 +122,7 @@ class TelaPergunta(Tela):
             for idx, a in enumerate(self.answers):
                 pos_y = WINDOW_SIZE[1] / 2 + 120 * idx / 2 + 50
                 self.answer_btn.append(
-                    Botao((50, pos_y), (700, 40), pygame.Color("gray"), a["text"])
+                    Botao((50, pos_y), (700, 40), pygame.Color("gray"), a["text"], self.fonte)
                 )
 
 

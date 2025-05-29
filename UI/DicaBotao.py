@@ -17,7 +17,7 @@ class DicaBotao:
 
     def check_click(self):
         if self.activated:
-            return  # Já foi clicado, não faz mais nada
+            return False # Já foi clicado, não faz mais nada
 
         mouse_pos = pygame.mouse.get_pos()
         mouse_pressed = pygame.mouse.get_pressed()[0]
@@ -28,7 +28,8 @@ class DicaBotao:
             elif not mouse_pressed and self.clicked:
                 self.clicked = False  # Solta o clique
                 self.activated = True  # Marca como ativado permanentemente
-                self.image = self.hover_image  # Troca a imagem apenas uma vez
+                self.image = self.hover_image
+                return True  # Troca a imagem apenas uma vez
         else:
             if not mouse_pressed:
                 self.clicked = False  # Garante reset do clique fora do botão
