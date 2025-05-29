@@ -74,11 +74,11 @@ class Database():
         # You might want to close connection here or manage it externally if this is a short-lived query
 
     # Adiciona um usuário ao banco de dados.
-    def add_aluno(self, email: str, password: str) -> bool:
+    def add_aluno(self, nome: str, email: str, password: str) -> bool:
         try:
             self.connect()
-            sql = "INSERT INTO Aluno (EmailAluno, SenhaAluno) VALUES (%s, %s)"
-            self.cursor.execute(sql, (email, password))
+            sql = "INSERT INTO Aluno (NomeAluno, EmailAluno, SenhaAluno) VALUES (%s, %s,%s)"
+            self.cursor.execute(sql, (nome,email, password))
             self.conexao.commit()
             print("Aluno adicionado com sucesso ao banco.")
             return True
@@ -86,6 +86,20 @@ class Database():
             print(f"Erro ao adicionar aluno: {e}")
             return False
         # You might want to close connection here or manage it externally
+
+    def add_professor(self, nome: str, email: str, password: str) -> bool:
+        try:
+            self.connect()
+            sql = "INSERT INTO Professor (NomeProfessor, EmailProfessor, SenhaProfessor) VALUES (%s, %s, %s)"
+            self.cursor.execute(sql, (nome, email, password))
+            self.conexao.commit()
+
+            print("Professor adicionado com sucesso ao banco.")
+            return True
+        except Exception as e:
+            print(f"Erro ao adicionar professor: {e}")
+            return False
+
 
     # Atualiza um usuário no banco de dados.
     def update_aluno(self, email: str, password: str, old_email: str): # Added old_email to identify the record
@@ -423,6 +437,7 @@ class Database():
             sql = """
                 SELECT
                     A.EmailAluno,
+                    A.NomeAluno,
                     P.PontuacaoPartida,
                     M.NomeMateria
                 FROM Aluno AS A
@@ -478,4 +493,42 @@ class Database():
             return questions_list
         except Exception as e:
             print(f"Erro ao buscar detalhes das perguntas: {e}")
+            return []
+        
+    def get_questions_by_materia(self, materia_id):
+        try:
+            self.connect()
+            sql = """
+                SELECT 
+                    idPerguntas, 
+                    Enunciado, 
+                    DificuldadePergunta, 
+                    Materia_idMateria
+                FROM Perguntas
+                WHERE Materia_idMateria = %s;
+            """
+            self.cursor.execute(sql, (materia_id,))
+            questions_raw = self.cursor.fetchall()
+            
+            questions_list = []
+            for q_id, enunciado, dificuldade, id_materia in questions_raw:
+                questions_list.append({
+                    "id": q_id,
+                    "enunciado": enunciado,
+                    "dificuldade": dificuldade,
+                    "materia_id": id_materia
+                })
+            return questions_list
+        except Exception as e:
+            print(f"Erro ao buscar perguntas por matéria: {e}")
+            return []
+    def get_materias(self):
+        try:
+            self.connect()
+            sql = "SELECT idMateria, NomeMateria FROM Materia;"
+            self.cursor.execute(sql)
+            resultados = self.cursor.fetchall()
+            return [{"id": row[0], "nome": row[1]} for row in resultados]
+        except Exception as e:
+            print(f"Erro ao buscar matérias: {e}")
             return []

@@ -14,11 +14,12 @@ class TelaAddAluno(Tela):
         self.tela = pygame.Surface((largura, altura))
         pygame.display.set_caption("Adicionar Aluno")
 
-        self.fonte = pygame.font.Font(None, 30)
+        self.fonte = pygame.font.Font(None, 16)
 
         self.caixas = [
-            self._criar_caixa_texto(20, 50, "EMAIL"),
-            self._criar_caixa_texto(20, 120, "SENHA")
+            self._criar_caixa_texto(20, 50, "NOME"),
+            self._criar_caixa_texto(20, 120, "EMAIL"),
+            self._criar_caixa_texto(20, 190, "SENHA")
         ]
 
         self.botao_add = Botao((290, 50), (120, 40), pygame.Color("saddlebrown"), "ADICIONAR", self.fonte)
@@ -74,11 +75,12 @@ class TelaAddAluno(Tela):
                                 caixa["texto"] += evento.unicode
 
             if self.botao_add.check_button():
-                email = self.caixas[0]["texto"].strip()
-                senha = self.caixas[1]["texto"].strip()
+                nome = self.caixas[0]["texto"].strip()
+                email = self.caixas[1]["texto"].strip()
+                senha = self.caixas[2]["texto"].strip()
 
-                if email and senha:
-                    sucesso = db.add_aluno(email, senha)  # <-- usa sua função aqui!
+                if nome and email and senha:
+                    sucesso = db.add_aluno(nome, email, senha)  # <-- usa sua função aqui!
                     if sucesso:
                         self.retorno = "aluno_adicionado"
                     else:

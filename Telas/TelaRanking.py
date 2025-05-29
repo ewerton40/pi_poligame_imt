@@ -21,13 +21,14 @@ class RankingTela:
         self.margem = 10
         self.altura_cabecalho = 40
         self.espacamento_cabecalho = 5
-        self.largura_coluna_email = (self.largura_da_tela - 2 * self.margem - 2 * self.espacamento_cabecalho) // 3
-        self.largura_coluna_pontuacao = self.largura_coluna_email
-        self.largura_coluna_materia = self.largura_coluna_email
+        self.largura_coluna_nome = (self.largura_da_tela - 3 * self.espacamento_cabecalho - 2 * self.margem) // 4
+        self.largura_coluna_email = self.largura_coluna_nome
+        self.largura_coluna_pontuacao = self.largura_coluna_nome
+        self.largura_coluna_materia = self.largura_coluna_nome
         
         self.rects_cabecalho = []
         x_atual = self.margem
-        for texto in ["EMAIL DO ALUNO", "PONTUAÇÃO", "MATÉRIA"]:
+        for texto in ["NOME DO ALUNO", "EMAIL DO ALUNO", "PONTUAÇÃO", "MATÉRIA"]:
             if texto == "EMAIL DO ALUNO":
                 largura = self.largura_coluna_email
             elif texto == "PONTUAÇÃO":
@@ -64,9 +65,10 @@ class RankingTela:
         # Chama o método get_rank_partidas da instância db_manager
         dados_brutos = self.db_manager.get_rank_partidas()
         self.ranking_data = []
-        for email, pontuacao, materia in dados_brutos:
+        for email,nome, pontuacao, materia in dados_brutos:
             self.ranking_data.append({
                 "email": email,
+                "nome": nome,
                 "pontuacao": str(pontuacao),
                 "materia": materia
             })
@@ -103,23 +105,25 @@ class RankingTela:
                 (self.margem, y, self.largura_da_tela - 2 * self.margem, self.altura_linha),
                 border_radius=2
             )
-            
-            x_email = self.margem + 5
-            x_pontuacao = self.margem + self.largura_coluna_email + self.espacamento_cabecalho + 5
-            x_materia = self.margem + self.largura_coluna_email + self.espacamento_cabecalho + \
-                                     self.largura_coluna_pontuacao + self.espacamento_cabecalho + 5
+
+
+            x_nome = self.margem + 5
+            x_email = x_nome + self.largura_coluna_nome + self.espacamento_cabecalho
+            x_pontuacao = x_email + self.largura_coluna_email + self.espacamento_cabecalho
+            x_materia = x_pontuacao + self.largura_coluna_pontuacao + self.espacamento_cabecalho
+
+            surf_nome = fonte.render(data["nome"], True, cor_texto)
+            self.tela_ranking.blit(surf_nome, (x_nome, y + (self.altura_linha - surf_nome.get_height()) // 2))
 
             surf_email = fonte.render(data["email"], True, cor_texto)
-            y_texto_email = y + (self.altura_linha - surf_email.get_height()) // 2
-            self.tela_ranking.blit(surf_email, (x_email, y_texto_email))
+            self.tela_ranking.blit(surf_email, (x_email, y + (self.altura_linha - surf_email.get_height()) // 2))
 
             surf_pontuacao = fonte.render(data["pontuacao"], True, cor_texto)
-            y_texto_pontuacao = y + (self.altura_linha - surf_pontuacao.get_height()) // 2
-            self.tela_ranking.blit(surf_pontuacao, (x_pontuacao, y_texto_pontuacao))
-            
+            self.tela_ranking.blit(surf_pontuacao, (x_pontuacao, y + (self.altura_linha - surf_pontuacao.get_height()) // 2))
+
             surf_materia = fonte.render(data["materia"], True, cor_texto)
-            y_texto_materia = y + (self.altura_linha - surf_materia.get_height()) // 2
-            self.tela_ranking.blit(surf_materia, (x_materia, y_texto_materia))
+            self.tela_ranking.blit(surf_materia, (x_materia, y + (self.altura_linha - surf_materia.get_height()) // 2))
+
 
             y += self.altura_linha + self.espacamento_linha
 

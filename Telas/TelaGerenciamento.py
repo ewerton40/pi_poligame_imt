@@ -65,6 +65,7 @@ class TelaGerenciamento:
             botoes.append(botao)
             x += largura_botao + espacamento
         return botoes
+    
 
     def _listar_perguntas_db(self):
         return self.db_manager.get_all_questions_details()
@@ -79,9 +80,11 @@ class TelaGerenciamento:
     def _close_db_connection(self):
         self.db_manager.close()
 
-    def _atualizar_lista_itens(self):
-        perguntas = self._listar_perguntas_db() 
-        
+    def _atualizar_lista_itens(self, filtrar_por_materia_id=None):
+        if filtrar_por_materia_id:
+            perguntas = self.db_manager.get_questions_by_materia(filtrar_por_materia_id)
+        else:
+            perguntas = self._listar_perguntas_db()
         self.itens_lista = []
         for i, pergunta_data in enumerate(perguntas):
             item_y = self.content_height = len(self.itens_lista) * (70 + self.espacamento_lista) 
@@ -95,6 +98,7 @@ class TelaGerenciamento:
 
         self.content_height = len(self.itens_lista) * (70 + self.espacamento_lista)
         self._ajustar_scroll_offset()
+
 
     def _ajustar_scroll_offset(self):
         if self.content_height < self.scroll_area_rect.height:
@@ -128,6 +132,8 @@ class TelaGerenciamento:
                     self._acao_adicionar_aluno()
                 elif botao.funcao == "add_professor":
                     self._acao_adicionar_professor()
+                elif botao.funcao == "filtrar":
+                    self._acao_filtrar()
 
     def _processar_scroll(self, evento):
         if evento.button == 4:  # Scroll up
@@ -184,6 +190,37 @@ class TelaGerenciamento:
 
         pygame.quit()
         self._close_db_connection()
+
+    def _acao_filtrar(self):
+        import tkinter as tk
+
+        materias = self.db_manager.get_materias()
+        if not materias:
+            print("Nenhuma matéria encontrada no banco.")
+            return
+
+        # Criar uma janela tkinter para exibir os botões
+        root = tk.Tk()
+        root.title("Filtrar por Matéria")
+        root.geometry("300x400")
+        root.configure(bg="white")
+
+        label = tk.Label(root, text="Selecione uma matéria:", bg="white", font=("Arial", 14))
+        label.pack(pady=10)
+
+        def selecionar_materia(materia_id):
+            root.destroy()  # Fecha a janela
+            self._atualizar_lista_itens(filtrar_por_materia_id=materia_id)
+
+        for materia in materias:
+            nome = materia["nome"].capitalize()
+            materia_id = materia["id"]
+            botao = tk.Button(root, text=nome, width=25, height=2, bg="#ADD8E6", command=lambda m=materia_id: selecionar_materia(m))
+            botao.pack(pady=5)
+
+        root.mainloop()
+
+
 
     def _acao_criar(self):
         tela_add = AddPerguntaTela()
