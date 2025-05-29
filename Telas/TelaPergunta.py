@@ -90,9 +90,10 @@ class TelaPergunta(Tela):
                 else:
                     # Redireciona para a TelaErro
                     from Telas.TelaErro import TelaErro
+                    pontuacao_visual = self.checkpoint * 100000
                     self.score.score = self.checkpoint
                     DATABASE.add_pontuacao_real(self.id_partida, self.checkpoint)
-                    self.transition_call(TelaErro(self.screen, self.transition_call, self.checkpoint, self.quit_game))
+                    self.transition_call(TelaErro(self.screen, self.transition_call, pontuacao_visual, self.quit_game))
                     return 
             
         # Verifica clique no botão parar
@@ -133,7 +134,7 @@ class TelaPergunta(Tela):
                 self.score.increment_score()
             
             if self.acertos in [3, 7]:
-                self.checkpoint = self.score.score
+                self.checkpoint = self.acertos
                 print("Checkpoint atingido")
 
         if len(self.pool.questions) == 1:
