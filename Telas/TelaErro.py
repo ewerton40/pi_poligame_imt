@@ -22,10 +22,7 @@ class TelaErro(Tela):
         fonte_botao = pygame.font.Font(None, 28)
 
         # Apenas o botão "Voltar ao Início"
-        self.botao_inicio = Botao(
-            (875, 650), (200, 45), pygame.Color("skyblue"),
-            "Voltar ao Início", fonte_botao
-        )
+        self.botao_inicio = Botao((875, 650), (200, 45), pygame.Color("skyblue"), "Voltar ao Início", fonte_botao  )
 
     def load(self):
         # Se quiser carregar outras imagens, faça aqui

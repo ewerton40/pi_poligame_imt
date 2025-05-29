@@ -6,7 +6,7 @@ class Pontuacao:
         self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
         self.color = color
         self.score = 0
-        self.score_incrementer = 10
+        self.score_incrementer = 100000
         self.border_color = pygame.Color("white")
         self.font = pygame.font.SysFont("Arial", 32)
 

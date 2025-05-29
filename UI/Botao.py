@@ -1,11 +1,11 @@
 import pygame
-import Constantes
 
 class Botao:
 
 #Classe contendo características gerais de todos os botões de dentro do jogo.
     def __init__(self, pos:tuple[float, float], size:tuple[float, float], color, text, font):
         self.rect = pygame.Rect(pos[0], pos[1], size[0], size[1])
+        self.original_color = color 
         self.color = color
         self.text = text
         self.border_color = pygame.Color("white")
@@ -32,7 +32,7 @@ class Botao:
                 # Set the flag to True when the button is clicked
                 self.clicked = True
         else:
-            self.color = self.color
+            self.color = self.original_color
             # Reset the flag when the button is not clicked
             self.clicked = False
 

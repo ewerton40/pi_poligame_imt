@@ -30,7 +30,7 @@ class TelaAcerto(Tela):
     def load(self):
         self.is_loaded = True
 
-    def draw(self):
+    def run(self, events):
         self.screen.blit(self.fundo_imagem, (0, 0))
 
         # Texto de vitória — ajustar posição aqui

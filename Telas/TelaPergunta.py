@@ -43,7 +43,7 @@ class TelaPergunta(Tela):
         self.pool = Pergunta(selected_questions)
         self.text = self.pool.get_question() #Pega a primeira pergunta
         self.answers:list[dict] = self.pool.get_answers() #Pega as respostas para compará-las com a pergunta
-        self.score = Pontuacao((1170, 10), (100, 50), pygame.Color("red"))
+        self.score = Pontuacao((1035, 10), (150, 50), pygame.Color("red"))
         self.len_questions = len(self.pool.questions) 
 
         self.images = {
@@ -91,7 +91,7 @@ class TelaPergunta(Tela):
                     # Redireciona para a TelaErro
                     from Telas.TelaErro import TelaErro
                     self.score.score = self.checkpoint
-                    print("Erro! Transicionando para TelaErro")
+                    DATABASE.add_pontuacao_real(self.id_partida, self.checkpoint)
                     self.transition_call(TelaErro(self.screen, self.transition_call, self.checkpoint, self.quit_game))
                     return 
             
@@ -129,6 +129,10 @@ class TelaPergunta(Tela):
             if not self.ended and correct:
                 self.acertos += 1
                 self.score.increment_score()
+            
+            if self.acertos in [3, 7]:
+                self.checkpoint = self.score.score
+                print("Checkpoint atingido")
 
         if len(self.pool.questions) == 1:
             self.transition_call(TelaAcerto(self.screen, self.transition_call, self.score.score))
@@ -151,7 +155,7 @@ class TelaPergunta(Tela):
                 )
 
             self.texts = break_line(
-                self.text, pygame.Vector2(50, 100)
+                self.text, pygame.Vector2(50, 100) 
             )
     
     def encerrar_jogo(self):
