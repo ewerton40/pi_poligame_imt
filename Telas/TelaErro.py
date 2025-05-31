@@ -22,7 +22,7 @@ class TelaErro(Tela):
         fonte_botao = pygame.font.Font(None, 28)
 
         # Apenas o botão "Voltar ao Início"
-        self.botao_inicio = Botao((875, 650), (200, 45), pygame.Color("skyblue"), "Voltar ao Início", fonte_botao  )
+        self.botao_inicio = Botao((860, 650), (200, 45), pygame.Color("skyblue"), "Voltar ao Início", fonte_botao  )
 
     def load(self):
         # Se quiser carregar outras imagens, faça aqui
@@ -44,10 +44,9 @@ class TelaErro(Tela):
         self.screen.blit(texto_pontuacao_surface, texto_pontuacao_rect)
 
         self.botao_inicio.draw(self.screen)
+        if self.botao_inicio.check_button():
+            from Telas.TelaInicio import TelaInicio
+            self.transition_call((TelaInicio(self.screen, self.transition_call, self.quit_game)))
 
-        for event in events:
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if self.botao_inicio.rect.collidepoint(event.pos):
-                    # Volta para tela inicial
-                    self.transition_call(TelaInicio(self.screen, self.transition_call, self.quit_game))
+    
 

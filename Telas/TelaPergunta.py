@@ -92,7 +92,7 @@ class TelaPergunta(Tela):
                     from Telas.TelaErro import TelaErro
                     pontuacao_visual = self.checkpoint * 100000
                     self.score.score = self.checkpoint
-                    DATABASE.add_pontuacao_real(self.id_partida, self.checkpoint)
+                    DATABASE.add_pontuacao_real(self.id_partida, self.acertos)
                     self.transition_call(TelaErro(self.screen, self.transition_call, pontuacao_visual, self.quit_game))
                     return 
             
