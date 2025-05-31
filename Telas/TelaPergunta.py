@@ -138,7 +138,7 @@ class TelaPergunta(Tela):
                 print("Checkpoint atingido")
 
         if len(self.pool.questions) == 1:
-            self.transition_call(TelaAcerto(self.screen, self.transition_call, self.score.score))
+            self.transition_call(TelaAcerto(self.screen, self.transition_call, self.quit_game))
             self.ended = True
             DATABASE.add_pontuacao_real(self.id_partida, self.acertos)
 
