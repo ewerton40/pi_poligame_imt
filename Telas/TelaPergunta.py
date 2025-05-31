@@ -35,10 +35,13 @@ class TelaPergunta(Tela):
         self.usou_pular = dica_existente["PularDica"] if dica_existente else False
 
     def load(self):
-        questions = DATABASE.get_questoes_por_materia_json(self.id_materia)
-        perguntas = json.loads(questions)
-        random.shuffle(perguntas)
-        selected_questions = perguntas[:10]
+        perguntas_faceis = json.loads(DATABASE.get_questoes_por_materia_e_dificuldade_json(self.id_materia, "Fácil"))
+        perguntas_medias = json.loads(DATABASE.get_questoes_por_materia_e_dificuldade_json(self.id_materia, "Média"))
+        perguntas_dificeis = json.loads(DATABASE.get_questoes_por_materia_e_dificuldade_json(self.id_materia, "Difícil"))
+        random.shuffle(perguntas_faceis)
+        random.shuffle(perguntas_medias)
+        random.shuffle(perguntas_dificeis)
+        selected_questions = perguntas_faceis[:4] + perguntas_medias[:4] + perguntas_dificeis[:2]
         #Cria um pool de perguntas
         self.pool = Pergunta(selected_questions)
         self.text = self.pool.get_question() #Pega a primeira pergunta
@@ -126,7 +129,7 @@ class TelaPergunta(Tela):
                     Botao((50, pos_y), (700, 40), pygame.Color("gray"), a["text"], self.fonte)
                 )
 
-
+        
     def next_question(self, first=False, correct=False):
         if not first:
             if not self.ended and correct:

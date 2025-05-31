@@ -288,7 +288,7 @@ class Database():
         
 
 
-    def get_questoes_por_materia_json(self, id_materia: int) -> str:
+    def get_questoes_por_materia_e_dificuldade_json(self, id_materia: int, dificuldade: str) -> str:
         try:
             sql = ("""
                 SELECT
@@ -304,11 +304,10 @@ class Database():
                 FROM Perguntas p
                 JOIN Pergunta_Resposta pr ON p.idPerguntas = pr.Perguntas_idPerguntas
                 JOIN Respostas r ON pr.Respostas_idRespostas = r.idRespostas
-                WHERE p.Materia_idMateria = %s
+                WHERE p.Materia_idMateria = %s AND p.DificuldadePergunta = %s
                 GROUP BY p.idPerguntas
             """)
-
-            self.cursor.execute(sql, (id_materia,))
+            self.cursor.execute(sql, (id_materia, dificuldade))
             perguntas = self.cursor.fetchall()
             self.conexao.commit()
 
@@ -321,18 +320,18 @@ class Database():
                 }
                 answers = json.loads(pergunta[2])
                 for answer in answers:
-                    answer_dict = {
+                    pergunta_dict["answers"].append({
                         "id": answer["answer_id"],
                         "text": answer["answer_text"],
                         "correct": answer["is_true"]
-                    }
-                    pergunta_dict["answers"].append(answer_dict)
+                    })
                 questoes_json.append(pergunta_dict)
 
             return json.dumps(questoes_json)
         except Exception as e:
-            print("Erro ao buscar questões por matéria:", e)
-            return "Erro"
+            print("Erro ao buscar questões por dificuldade:", e)
+            return "[]"
+
         
 
     def criar_dica_para_partida(self, id_partida):
