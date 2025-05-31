@@ -1,0 +1,95 @@
+CREATE DATABASE IF NOT EXISTS SistemaJogoEducacional;
+USE SistemaJogoEducacional;
+
+CREATE TABLE Aluno (
+idAluno	INT AUTO_INCREMENT PRIMARY KEY,
+NomeAluno VARCHAR(50)NOT NULL,
+EmailAluno VARCHAR(45) UNIQUE NOT NULL
+);
+
+-- tabela PROFESSOR
+CREATE TABLE Professor (
+idProfessor INT AUTO_INCREMENT PRIMARY KEY,
+NomeProfessor VARCHAR(50)NOT NULL,
+EmailProfessor VARCHAR(45) UNIQUE NOT NULL
+);
+
+-- tabela AVALIAÇÃO 
+CREATE TABLE Avaliacao(
+Aluno_idAluno INT,
+Professor_idProfessor INT,
+
+PRIMARY KEY (Aluno_idAluno, Professor_idProfessor),
+FOREIGN KEY (Aluno_idAluno) REFERENCES Aluno(idAluno) ON DELETE CASCADE ON UPDATE CASCADE,
+FOREIGN KEY (Professor_idProfessor) REFERENCES Professor(idProfessor) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- -----------------------------------------------------------------------------------
+
+-- tabela MATERIA e ramificações
+CREATE TABLE Materia(
+idMateria INT AUTO_INCREMENT PRIMARY KEY,
+NomeMateria VARCHAR(45)
+);
+
+-- tabela PERGUNTAS
+CREATE TABLE Perguntas(
+idPerguntas INT AUTO_INCREMENT PRIMARY KEY,
+Enunciado VARCHAR(100),
+DificuldadePergunta VARCHAR(8) CHECK (DificuldadePergunta IN ('Fácil', 'Média', 'Difícil')),
+
+Materia_idMateria INT,
+FOREIGN KEY(Materia_idMateria) REFERENCES Materia(idMateria) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- tabela PARTIDA 
+CREATE TABLE Partida(
+idPartida INT AUTO_INCREMENT PRIMARY KEY,
+PontuacaoPartida DECIMAL(9,0),
+
+Materia_idMateria INT,
+Aluno_idAluno INT,
+FOREIGN KEY(Materia_idMateria) REFERENCES Materia(idMateria) ON DELETE CASCADE ON UPDATE CASCADE,
+FOREIGN KEY(Aluno_idAluno) REFERENCES Aluno(idAluno) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- -----------------------------------------------------------------------------------
+
+-- Tabela RESPOSTAS
+CREATE TABLE Respostas(
+idRespostas INT AUTO_INCREMENT PRIMARY KEY,
+TextoAlternativo VARCHAR(150) NOT NULL
+);
+
+DROP TABLE IF EXISTS Pergunta_Resposta CASCADE;
+CREATE TABLE Pergunta_Resposta(
+Perguntas_idPerguntas INT,
+Respostas_idRespostas INT,
+Correta BOOLEAN NOT NULL,
+PRIMARY KEY (Perguntas_idPerguntas, Respostas_idRespostas),
+FOREIGN KEY (Perguntas_idPerguntas) REFERENCES Perguntas(idPerguntas) ON DELETE CASCADE ON UPDATE CASCADE,
+FOREIGN KEY (Respostas_idRespostas) REFERENCES Respostas(idRespostas) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+-- Tabela JOGOALUNO 
+CREATE TABLE JogoAluno(
+Aluno_idAluno INT,
+Perguntas_idPerguntas INT,
+Respostas_idRespostas INT,
+Partida_idPartida INT,
+PRIMARY KEY (Aluno_idAluno, Perguntas_idPerguntas, Partida_idPartida),
+FOREIGN KEY(Aluno_idAluno) REFERENCES Aluno(idAluno) ON DELETE CASCADE ON UPDATE CASCADE,
+FOREIGN KEY(Perguntas_idPerguntas) REFERENCES Perguntas(idPerguntas) ON DELETE CASCADE ON UPDATE CASCADE,
+FOREIGN KEY (Perguntas_idPerguntas, Respostas_idRespostas) 
+REFERENCES Pergunta_Resposta(Perguntas_idPerguntas, Respostas_idRespostas) ON DELETE CASCADE ON UPDATE CASCADE,
+FOREIGN KEY(Partida_idPartida) REFERENCES Partida(idPartida) ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+DROP TABLE IF EXISTS Dica CASCADE;
+CREATE TABLE Dica(
+idDica INT AUTO_INCREMENT PRIMARY KEY ,
+MeioaMeio BOOLEAN NOT NULL,
+PularDica BOOLEAN NOT NULL,
+Partida_idPartida INT,
+FOREIGN KEY (Partida_idPartida) REFERENCES Partida(idPartida) ON DELETE CASCADE ON UPDATE CASCADE);
+
