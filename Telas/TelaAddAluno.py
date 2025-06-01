@@ -4,7 +4,6 @@ from UI.Botao import Botao
 from interfaces.database import Database
 
 db = Database()
-db.connect()  # Certifique-se de que sua classe aceita o parâmetro
 
 class TelaAddAluno(Tela):
     def __init__(self, screen, transition_call, largura=1280, altura=720):

@@ -14,9 +14,7 @@ class RankingTela:
 
         # Instancia a classe Database para gerenciar as operações de DB
         self.db_manager = Database() 
-        # É uma boa prática conectar aqui, ou no início do programa principal,
-        # e fechar a conexão quando o programa terminar.
-        self.db_manager.connect() # Conecta ao banco de dados ao inicializar a tela de ranking
+
 
         self.margem = 10
         self.altura_cabecalho = 40
@@ -157,12 +155,3 @@ class RankingTela:
         return True
 
 
-if __name__ == '__main__':
-    pygame.init()
-    tela_principal = pygame.display.set_mode((1280, 720))
-    pygame.display.set_caption("Ranking de Partidas")
-
-    ranking_tela = RankingTela(tela_principal)
-    ranking_tela.executar()
-
-    pygame.quit()

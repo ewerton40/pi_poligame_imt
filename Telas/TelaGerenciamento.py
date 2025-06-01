@@ -9,28 +9,27 @@ from Telas.TelaRanking import RankingTela
 from interfaces.database import Database
 
 class TelaGerenciamento:
-    def __init__(self):
+    def __init__(self, screen, transition_call):
         pygame.init()
         self.largura = 1280
         self.altura = 720
-        self.tela = pygame.display.set_mode((self.largura, self.altura))
-        pygame.display.set_caption("Tela de Gerenciamento")
-
-        self.fonte = pygame.font.Font(None, 30)
-        self.botoes_menu = self._criar_botoes_menu()
-
+        self.screen = screen
+        self.transition_call = transition_call
+        self.is_loaded = False
+        self.db_manager = Database()
+        self.db_manager.connect()
         texto_mostrar = "Perguntas"
+        self.fonte = pygame.font.Font(None, 30)
         self.texto_mostrar = self.fonte.render(texto_mostrar, True, pygame.Color("black"))
         self.rect_mostrar = self.texto_mostrar.get_rect(
             topleft=(10, 20 + 60 + 20)
         )
 
-        self.db_manager = Database()
-        self.db_manager.connect()
-
+    
+        self.botoes_menu = self._criar_botoes_menu()
         self.espacamento_lista = 10
         self.y_inicial_lista = self.rect_mostrar.bottom + 20
-
+         
         self.scroll_area_rect = pygame.Rect(
             10, self.y_inicial_lista, self.largura - 20, self.altura - self.y_inicial_lista - 20
         )
@@ -39,6 +38,15 @@ class TelaGerenciamento:
 
         self._atualizar_lista_itens()
         self.rodando = True
+
+
+    def load(self):
+        self.is_loaded = True
+
+    def run(self, events):
+        self.tela = pygame.display.set_mode((self.largura, self.altura))
+        self.executar()
+
 
     def _criar_botoes_menu(self):
         labels = ["Criar", "Filtrar", "Add Aluno", "Add Professor", "Ranking"]

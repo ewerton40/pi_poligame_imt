@@ -1,7 +1,7 @@
 import pygame
 from interfaces.database import Database
 db = Database()
-db.connect()  
+ 
 
 class AddPerguntaTela:
     def __init__(self):
