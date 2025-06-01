@@ -8,15 +8,14 @@ def main():
 
     # Importações adiadas após inicialização de Pygame/fontes
     from Telas.TelaAddPergunta import AddPerguntaTela
-    from Classes.rankingAlunos import RankingTela
+    from Telas.TelaAddProfessor import TelaAddProfessor
     from Telas.TelaAddAluno import TelaAddAluno
     from Telas.TelaGerenciamento import TelaGerenciamento
 
 
     from UI.Botao import Botao
     from Classes.item_lista import ItemLista
-    from Classes.gerenciador_perguntas import GerenciadorPerguntas
-    from Classes.componentes import UIComponentes
+    
 
     # Cria e executa a tela de gerenciamento
     tela_gerenciamento = TelaGerenciamento()
