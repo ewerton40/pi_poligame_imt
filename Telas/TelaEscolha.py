@@ -18,6 +18,7 @@ class TelaEscolha(Tela):
          self.images = {}
          self.quit_game = quit_game
          self.id_aluno = id_aluno
+         self.create_partida = False
          self.id_materia = None
          fonte = pygame.font.SysFont("Arial", 24) 
          self.portugues = Botao((580, 180), (170, 90), pygame.Color("skyblue"), "Português", fonte)
@@ -47,13 +48,15 @@ class TelaEscolha(Tela):
             self.transition_call(TelaInicio(self.screen, self.transition_call, self.quit_game))
 
         self.portugues.draw(self.screen)
-        if self.portugues.check_button():
+        if not self.create_partida and self.portugues.check_button():
+            self.create_partida = True
             self.id_materia = 1 
             id_partida = DATABASE.criar_partida(self.id_aluno, self.id_materia)
             self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida))
 
         self.quimica.draw(self.screen)
-        if self.quimica.check_button():
+        if not self.create_partida and self.quimica.check_button():
+            self.create_partida = True
             self.id_materia = 2
             id_partida = DATABASE.criar_partida(self.id_aluno, self.id_materia)   
             self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida))          

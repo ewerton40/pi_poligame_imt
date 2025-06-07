@@ -5,7 +5,7 @@ from Classes.item_lista import ItemLista
 from Telas.TelaAddAluno import TelaAddAluno
 from Telas.TelaAddPergunta import AddPerguntaTela
 from Telas.TelaAddProfessor import TelaAddProfessor
-from Telas.TelaRanking import RankingTela
+from Telas.TelaRanking import RankingTela 
 from interfaces.database import Database
 
 class TelaGerenciamento:

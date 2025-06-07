@@ -105,23 +105,30 @@ class RankingTela:
             )
 
 
-            x_nome = self.margem + 5
+            x_nome = self.margem
             x_email = x_nome + self.largura_coluna_nome + self.espacamento_cabecalho
             x_pontuacao = x_email + self.largura_coluna_email + self.espacamento_cabecalho
             x_materia = x_pontuacao + self.largura_coluna_pontuacao + self.espacamento_cabecalho
 
             surf_nome = fonte.render(data["nome"], True, cor_texto)
-            self.tela_ranking.blit(surf_nome, (x_nome, y + (self.altura_linha - surf_nome.get_height()) // 2))
+            rect_nome = pygame.Rect(x_nome, y, self.largura_coluna_nome, self.altura_linha)
+            texto_rect = surf_nome.get_rect(center=rect_nome.center)
+            self.tela_ranking.blit(surf_nome, texto_rect)
 
             surf_email = fonte.render(data["email"], True, cor_texto)
-            self.tela_ranking.blit(surf_email, (x_email, y + (self.altura_linha - surf_email.get_height()) // 2))
+            rect_email = pygame.Rect(x_email, y, self.largura_coluna_email, self.altura_linha)
+            texto_rect = surf_email.get_rect(center=rect_email.center)
+            self.tela_ranking.blit(surf_email, texto_rect)
 
             surf_pontuacao = fonte.render(data["pontuacao"], True, cor_texto)
-            self.tela_ranking.blit(surf_pontuacao, (x_pontuacao, y + (self.altura_linha - surf_pontuacao.get_height()) // 2))
+            rect_pontuacao = pygame.Rect(x_pontuacao, y, self.largura_coluna_pontuacao, self.altura_linha)
+            texto_rect = surf_pontuacao.get_rect(center=rect_pontuacao.center)
+            self.tela_ranking.blit(surf_pontuacao, texto_rect)
 
             surf_materia = fonte.render(data["materia"], True, cor_texto)
-            self.tela_ranking.blit(surf_materia, (x_materia, y + (self.altura_linha - surf_materia.get_height()) // 2))
-
+            rect_materia = pygame.Rect(x_materia, y, self.largura_coluna_materia, self.altura_linha)
+            texto_rect = surf_materia.get_rect(center=rect_materia.center)
+            self.tela_ranking.blit(surf_materia, texto_rect)
 
             y += self.altura_linha + self.espacamento_linha
 

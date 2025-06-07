@@ -39,7 +39,7 @@ class TelaErro(Tela):
         self.screen.blit(texto_informacao_surface, texto_informacao_rect)
 
         texto_pontuacao = f"Pontuação: {self.pontuacao}"
-        texto_pontuacao_surface = self.font.render(texto_pontuacao, True, pygame.Color("white"))
+        texto_pontuacao_surface = self.font.render(texto_pontuacao, True, pygame.Color("black"))
         texto_pontuacao_rect = texto_pontuacao_surface.get_rect(center=(950, 550))
         self.screen.blit(texto_pontuacao_surface, texto_pontuacao_rect)
 
