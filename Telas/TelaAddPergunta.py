@@ -9,18 +9,16 @@ class AddPerguntaTela:
         self.largura, self.altura = 1280, 720
         self.tela = pygame.display.set_mode((self.largura, self.altura))
         pygame.display.set_caption("Adicionar Pergunta")
-
         self.margem = 20
         self.fonte_30 = pygame.font.Font(None, 30)
         self.fonte_24 = pygame.font.Font(None, 24)
-
         self.label_pergunta = self.fonte_30.render("PERGUNTA", True, pygame.Color("white"))
         self.rect_label = self.label_pergunta.get_rect(topleft=(self.margem, self.margem))
-
         self.caixatexto = pygame.Rect(self.margem, self.rect_label.bottom + 10, 400, 100)
         self.texto_pergunta = ""
+        self.mensagem_sucesso = ""
+        self.mensagem_erro = ""
         self.ativo_pergunta = False
-
         self.rects_alt = [pygame.Rect(self.margem, self.caixatexto.bottom + 20 + i * 50,
                                       self.caixatexto.width, 40) for i in range(4)]
         self.textos_alt = [""] * 4
@@ -122,14 +120,21 @@ class AddPerguntaTela:
                         }
 
                         if not self.texto_pergunta.strip() or not all(self.textos_alt):
-                            print("Preencha a pergunta e todas as alternativas.")
+                            self.mensagem_erro = "Preencha a pergunta e todas as alternativas."
                             continue
 
                         if not self.sel_dificuldade or not self.sel_materia:
-                            print("Selecione uma dificuldade e uma matéria.")
+                            self.mensagem_erro = "Selecione uma dificuldade e uma matéria."
                             continue
 
-                        idMateria = materias[self.sel_materia]
+                        self.mensagem_erro = ""
+
+                        try:
+                            idMateria = materias[self.sel_materia]
+                        except KeyError:
+                            self.mensagem_erro = "Matéria inválida selecionada."
+                            continue
+
                         try:
                             self.db.add_questao(
                                 self.texto_pergunta.strip(), self.sel_dificuldade, idMateria,
@@ -137,8 +142,13 @@ class AddPerguntaTela:
                                 self.textos_alt[2].strip(), self.textos_alt[3].strip()
                             )
                             print("Pergunta adicionada com sucesso.")
-                            rodando = False
-                            retorno = "adicionada"
+
+                            self.texto_pergunta = ""
+                            self.textos_alt = [""] * 4
+                            self.sel_dificuldade = None
+                            self.sel_materia = None
+                            self.mensagem_sucesso = "Pergunta adicionada com sucesso!"
+                            
                         except Exception as e:
                             print("Erro ao adicionar pergunta:", e)
 
@@ -173,12 +183,17 @@ class AddPerguntaTela:
 
             for i, r in enumerate(self.rects_alt):
                 cor_b = pygame.Color("dodgerblue") if self.ativos_alt[i] else pygame.Color("gray")
+                if i == 3:
+                    cor_b = pygame.Color("limegreen")
                 self.tela.fill(cor_bg, r)
-                pygame.draw.rect(self.tela, cor_b, r, 2, border_radius=5)
+                pygame.draw.rect(self.tela, cor_b, r, 3)
                 rot = self.fonte_24.render(f"{chr(65 + i)}.", True, pygame.Color("white"))
                 self.tela.blit(rot, (r.x - 30, r.y + 5))
                 text = self.fonte_30.render(self.textos_alt[i], True, pygame.Color("white"))
                 self.tela.blit(text, (r.x + 10, r.y + 5))
+                if i == 3:
+                    texto_correta = self.fonte_24.render("Correta <==", True, pygame.Color("limegreen"))
+                    self.tela.blit(texto_correta, (r.right + 10, r.y + 8))
 
             for rect, txt in [(self.rect_add, "ADICIONAR"),
                               (self.rect_cancel, "CANCELAR"),
@@ -209,6 +224,14 @@ class AddPerguntaTela:
                     self.tela.fill(cor, r)
                     text = self.fonte_24.render(f, True, pygame.Color("white"))
                     self.tela.blit(text, (r.x + 5, r.y + 5))
+
+            if self.mensagem_sucesso:
+                texto = self.fonte_24.render(self.mensagem_sucesso, True, pygame.Color("limegreen"))
+                self.tela.blit(texto, (self.margem, self.altura - self.margem - 70))
+
+            elif self.mensagem_erro:
+                texto_erro = self.fonte_24.render(self.mensagem_erro, True, pygame.Color("red"))
+                self.tela.blit(texto_erro, (self.margem, self.altura - self.margem - 70))
 
             pygame.display.flip()
 
