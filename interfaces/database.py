@@ -489,16 +489,13 @@ class Database():
             print(f"Erro inesperado ao buscar ranking: {e}")
             return []
         finally:
-            # Para métodos de busca que podem ser chamados várias vezes,
-            # é melhor deixar o fechamento da conexão para o chamador da classe Database.
-            # No entanto, se esta é uma operação isolada, você pode fechá-la aqui.
-            # Se for uma operação isolada, é ideal ter um `with` statement ou um método de close explícito.
-            # Por simplicidade para este método, vou omitir o close aqui, 
-            # assumindo que a instância de Database será fechada externamente
-            # quando não for mais necessária (por exemplo, no final do programa).
             pass
 
     def get_all_questions_details(self):
+        try:
+            self.conexao.close()
+        except:
+            pass 
         """
         Retorna todas as perguntas com Enunciado, Materia_idMateria e DificuldadePergunta.
         Retorna uma lista de dicionários, cada um representando uma pergunta.

@@ -1,8 +1,7 @@
 import pygame
 from interfaces.database import Database
-db = Database()
- 
 
+ 
 class AddPerguntaTela:
     def __init__(self):
         self.db = Database()
@@ -158,6 +157,7 @@ class AddPerguntaTela:
 
                 elif evento.type == pygame.KEYDOWN:
                     if self.ativo_pergunta:
+                        self.mensagem_sucesso = ""
                         if evento.key == pygame.K_BACKSPACE:
                             self.texto_pergunta = self.texto_pergunta[:-1]
                         elif evento.key != pygame.K_RETURN:
@@ -165,6 +165,7 @@ class AddPerguntaTela:
                     else:
                         for i, ativo in enumerate(self.ativos_alt):
                             if ativo:
+                                self.mensagem_sucesso = ""
                                 if evento.key == pygame.K_BACKSPACE:
                                     self.textos_alt[i] = self.textos_alt[i][:-1]
                                 elif evento.key != pygame.K_RETURN:
@@ -196,7 +197,7 @@ class AddPerguntaTela:
                     self.tela.blit(texto_correta, (r.right + 10, r.y + 8))
 
             for rect, txt in [(self.rect_add, "ADICIONAR"),
-                              (self.rect_cancel, "CANCELAR"),
+                              (self.rect_cancel, "VOLTAR"),
                               (self.rect_filt_dif, "DIFICULDADE"),
                               (self.rect_filt_mat, "MATÉRIA")]:
                 cor_btn = pygame.Color("saddlebrown")
@@ -238,8 +239,3 @@ class AddPerguntaTela:
         return retorno
 
 
-if __name__ == '__main__':
-    pygame.init()
-    app = AddPerguntaTela()
-    app.executar()
-    pygame.quit()

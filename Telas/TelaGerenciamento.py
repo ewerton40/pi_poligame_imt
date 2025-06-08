@@ -41,9 +41,11 @@ class TelaGerenciamento:
 
 
     def load(self):
+        self._atualizar_lista_itens()
         self.is_loaded = True
 
     def run(self, events):
+        self._atualizar_lista_itens()
         self.tela = pygame.display.set_mode((self.largura, self.altura))
         self.executar()
 
@@ -77,10 +79,6 @@ class TelaGerenciamento:
 
     def _listar_perguntas_db(self):
         return self.db_manager.get_all_questions_details()
-
-    def _adicionar_pergunta_db(self, enunciado: str, dificuldade: str, id_materia: int, 
-                             alt1: str, alt2: str, alt3: str, resposta: str):
-        self.db_manager.add_questao(enunciado, dificuldade, id_materia, alt1, alt2, alt3, resposta)
         
     def _excluir_pergunta_db(self, pergunta_id: int):
         self.db_manager.delete_questao(pergunta_id)
@@ -88,7 +86,7 @@ class TelaGerenciamento:
     def _close_db_connection(self):
         self.db_manager.close()
 
-    def _atualizar_lista_itens(self, filtrar_por_materia_id=None):
+    def _atualizar_lista_itens(self, filtrar_por_materia_id=None):    
         if filtrar_por_materia_id:
             perguntas = self.db_manager.get_questions_by_materia(filtrar_por_materia_id)
         else:
@@ -106,6 +104,7 @@ class TelaGerenciamento:
 
         self.content_height = len(self.itens_lista) * (70 + self.espacamento_lista)
         self._ajustar_scroll_offset()
+        
 
 
     def _ajustar_scroll_offset(self):
@@ -176,7 +175,6 @@ class TelaGerenciamento:
         pygame.display.flip()
 
     def _renderizar_lista(self):
-        # Criar superfície para a lista
         list_surface = pygame.Surface((self.scroll_area_rect.width, max(self.scroll_area_rect.height, self.content_height)))
         list_surface.fill(pygame.Color("lightgray")) 
 
@@ -190,6 +188,7 @@ class TelaGerenciamento:
             self.scroll_area_rect, 
             (0, -self.scroll_offset, self.scroll_area_rect.width, self.scroll_area_rect.height)
         )
+        pygame.display.flip()
 
     def executar(self):
         while self.rodando:
@@ -231,21 +230,11 @@ class TelaGerenciamento:
 
 
     def _acao_criar(self):
+        perguntas_antes = len(self.db_manager.get_all_questions_details())
         tela_add = AddPerguntaTela()
-        retorno = tela_add.executar()
-        if retorno == "adicionar":
-            pergunta_data = tela_add.get_pergunta_data()
-            if pergunta_data:
-                self._adicionar_pergunta_db(
-                    pergunta_data['enunciado'], 
-                    pergunta_data['dificuldade'], 
-                    pergunta_data['materia_id'], 
-                    pergunta_data['alt1'], 
-                    pergunta_data['alt2'], 
-                    pergunta_data['alt3'], 
-                    pergunta_data['resposta_correta']
-                )
-                self._atualizar_lista_itens()
+        tela_add.executar()
+        perguntas_depois = len(self.db_manager.get_all_questions_details())
+        self._atualizar_lista_itens()
 
     def _acao_ranking(self):
         """Abre a tela de ranking"""
