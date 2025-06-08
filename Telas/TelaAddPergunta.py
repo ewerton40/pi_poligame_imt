@@ -116,7 +116,7 @@ class AddPerguntaTela:
                         materias = {
                             "português": 1,
                             "química": 2,
-                            # Adicione os outros conforme existirem no banco
+                            "física": 3
                         }
 
                         if not self.texto_pergunta.strip() or not all(self.textos_alt):

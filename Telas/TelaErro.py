@@ -12,7 +12,7 @@ class TelaErro(Tela):
         self.quit_game = quit_game
         self.font = pygame.font.Font(None, 28)
         self.texto_erro = "Você errou a pergunta!"
-        self.texto_informacao = "Você perdeu os pontos e voltou ao último checkpoint!"
+        self.texto_informacao = "Você perdeu e voltou ao último checkpoint!"
         self.pontuacao = pontuacao_visual
         self.fundo_imagem = pygame.image.load("imagens/erro.jpg")
         self.fundo_imagem = pygame.transform.scale(
@@ -21,12 +21,11 @@ class TelaErro(Tela):
 
         fonte_botao = pygame.font.Font(None, 28)
 
-        # Apenas o botão "Voltar ao Início"
+        
         self.botao_inicio = Botao((860, 650), (200, 45), pygame.Color("skyblue"), "Voltar ao Início", fonte_botao  )
 
     def load(self):
-        # Se quiser carregar outras imagens, faça aqui
-        self.is_loaded = True  # indica que carregou corretamente
+        self.is_loaded = True  
 
     def run(self, events):
         self.screen.blit(self.fundo_imagem, (0, 0))
@@ -38,7 +37,7 @@ class TelaErro(Tela):
         self.screen.blit(texto_erro_surface, texto_erro_rect)
         self.screen.blit(texto_informacao_surface, texto_informacao_rect)
 
-        texto_pontuacao = f"Pontuação: {self.pontuacao}"
+        texto_pontuacao = f"Premiação: R${self.pontuacao}"
         texto_pontuacao_surface = self.font.render(texto_pontuacao, True, pygame.Color("black"))
         texto_pontuacao_rect = texto_pontuacao_surface.get_rect(center=(950, 550))
         self.screen.blit(texto_pontuacao_surface, texto_pontuacao_rect)

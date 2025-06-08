@@ -21,8 +21,9 @@ class TelaEscolha(Tela):
          self.create_partida = False
          self.id_materia = None
          fonte = pygame.font.SysFont("Arial", 24) 
-         self.portugues = Botao((580, 180), (170, 90), pygame.Color("skyblue"), "Português", fonte)
-         self.quimica = Botao((580, 340), (170, 90), pygame.Color("skyblue"), "Química", fonte)
+         self.portugues = Botao((860, 305), (170, 90), pygame.Color("skyblue"), "Português", fonte)
+         self.quimica = Botao((580, 305), (170, 90), pygame.Color("skyblue"), "Química", fonte)
+         self.fisica = Botao((300, 305), (170, 90), pygame.Color("skyblue"), "Física", fonte)
          self.voltar = Botao((20,20), (100, 60), pygame.Color("skyblue"), "Voltar", fonte)
 
 
@@ -59,4 +60,11 @@ class TelaEscolha(Tela):
             self.create_partida = True
             self.id_materia = 2
             id_partida = DATABASE.criar_partida(self.id_aluno, self.id_materia)   
-            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida))          
+            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida))    
+
+        self.fisica.draw(self.screen)
+        if not self.create_partida and self.fisica.check_button():
+            self.create_partida = True
+            self.id_materia = 3
+            id_partida = DATABASE.criar_partida(self.id_aluno, self.id_materia)   
+            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida))                
