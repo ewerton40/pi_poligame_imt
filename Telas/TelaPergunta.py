@@ -24,6 +24,10 @@ class TelaPergunta(Tela):
         self.checkpoint = 0  # valor salvo ao atingir o checkpoint
         self.pergunta_atual = 1
         self.fonte = pygame.font.SysFont("Arial", 25)
+        self.resposta_errada_marcada = False
+        self.botao_resposta_certa = None
+        self.botao_resposta_errada = None
+        self.tempo_erro = None
 
         # Verifica se já existe entrada na tabela Dica para essa partida
         dica_existente = DATABASE.get_dica_por_partida(self.id_partida)
@@ -82,23 +86,42 @@ class TelaPergunta(Tela):
         self.pular_btn.draw(self.screen)
         self.parar_btn.draw(self.screen)
 
-        for answer_btn in self.answer_btn:
-            answer_btn.draw(self.screen)
-            if answer_btn.check_button():
-                texto_resposta = answer_btn.text
-                correta = self.pool.is_correct_answer(texto_resposta)
-    
-                if correta:
-                    self.next_question(correct=True)
+        for btn in self.answer_btn:
+            if self.resposta_errada_marcada:
+                if btn == self.botao_resposta_errada:
+                    btn.color = pygame.Color("red")
+                elif btn == self.botao_resposta_certa:
+                    btn.color = pygame.Color("green")
                 else:
-                    # Redireciona para a TelaErro
-                    from Telas.TelaErro import TelaErro
-                    pontuacao_visual = self.checkpoint * 100000
-                    self.score.score = self.checkpoint
-                    DATABASE.add_pontuacao_real(self.id_partida, self.acertos)
-                    self.transition_call(TelaErro(self.screen, self.transition_call, pontuacao_visual, self.quit_game))
-                    return 
-            
+                    btn.color = pygame.Color("gray")
+            btn.draw(self.screen)
+
+    # Verificação de clique apenas se ainda não errou
+        if not self.resposta_errada_marcada:
+            for btn in self.answer_btn:
+                if btn.check_button():
+                    texto_resposta = btn.text
+                    if self.pool.is_correct_answer(texto_resposta):
+                        self.next_question(correct=True)
+                    else:
+                        self.resposta_errada_marcada = True
+                        self.botao_resposta_errada = btn
+                        for b in self.answer_btn:
+                            if self.pool.is_correct_answer(b.text):
+                                self.botao_resposta_certa = b
+                                break
+                        self.tempo_erro = pygame.time.get_ticks()
+                        DATABASE.add_pontuacao_real(self.id_partida, self.acertos)
+
+   
+        if self.resposta_errada_marcada and self.tempo_erro:
+            if pygame.time.get_ticks() - self.tempo_erro > 3000:
+                from Telas.TelaErro import TelaErro
+                pontuacao_visual = self.checkpoint * 100000
+                self.score.score = self.checkpoint
+                self.transition_call(TelaErro(self.screen, self.transition_call, pontuacao_visual, self.quit_game))
+                return
+                        
         # Verifica clique no botão parar
         if self.parar_btn.check_button():
             self.encerrar_jogo()
