@@ -10,7 +10,7 @@ from Classes.Pergunta import Pergunta# Classe que gerencia perguntas
 from util import WINDOW_SIZE, break_line, DATABASE, USER
 
 class TelaPergunta(Tela):
-    def __init__(self, screen, transition_call, id_materia, quit_game, id_partida ):
+    def __init__(self, screen, transition_call, id_materia, quit_game, id_partida , id_aluno):
         super().__init__(screen, transition_call)
         self.screen = screen
         self.ended = False
@@ -20,6 +20,7 @@ class TelaPergunta(Tela):
         self.answer_btn = []
         self.id_materia = id_materia
         self.id_partida = id_partida
+        self.id_aluno = id_aluno
         self.quit_game = quit_game
         self.checkpoint = 0  # valor salvo ao atingir o checkpoint
         self.pergunta_atual = 1
@@ -119,7 +120,7 @@ class TelaPergunta(Tela):
                 from Telas.TelaErro import TelaErro
                 pontuacao_visual = self.checkpoint * 100000
                 self.score.score = self.checkpoint
-                self.transition_call(TelaErro(self.screen, self.transition_call, pontuacao_visual, self.quit_game))
+                self.transition_call(TelaErro(self.screen, self.transition_call, pontuacao_visual, self.quit_game, self.id_aluno))
                 return
                         
         # Verifica clique no botão parar
@@ -164,7 +165,7 @@ class TelaPergunta(Tela):
                 print("Checkpoint atingido")
 
         if len(self.pool.questions) == 1:
-            self.transition_call(TelaAcerto(self.screen, self.transition_call, self.quit_game))
+            self.transition_call(TelaAcerto(self.screen, self.transition_call, self.quit_game, self.id_aluno))
             self.ended = True
             DATABASE.add_pontuacao_real(self.id_partida, self.acertos)
 
@@ -191,4 +192,4 @@ class TelaPergunta(Tela):
         # Salvar pontuação real (quantidade de acertos) no banco
         DATABASE.add_pontuacao_real(self.id_partida, self.acertos)
         from Telas.TelaInicio import TelaInicio
-        self.transition_call(TelaInicio(self.screen, self.transition_call, self.quit_game))
+        self.transition_call(TelaInicio(self.screen, self.transition_call, self.quit_game, user_data={"tipo":"Aluno", "id": self.id_aluno}))

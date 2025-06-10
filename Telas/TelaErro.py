@@ -5,11 +5,12 @@ from Telas.Tela import Tela
 from Telas.TelaInicio import TelaInicio
 
 class TelaErro(Tela):
-    def __init__(self, screen, transition_call, pontuacao_visual, quit_game):
+    def __init__(self, screen, transition_call, pontuacao_visual, quit_game, id_aluno):
         super().__init__(screen, transition_call)
         self.screen = screen        
         self.transition_call = transition_call
         self.quit_game = quit_game
+        self.id_aluno = id_aluno
         self.font = pygame.font.Font(None, 28)
         self.texto_erro = "Você errou a pergunta!"
         self.texto_informacao = "Você perdeu e voltou ao último checkpoint!"
@@ -45,7 +46,7 @@ class TelaErro(Tela):
         self.botao_inicio.draw(self.screen)
         if self.botao_inicio.check_button():
             from Telas.TelaInicio import TelaInicio
-            self.transition_call((TelaInicio(self.screen, self.transition_call, self.quit_game)))
+            self.transition_call(TelaInicio(self.screen, self.transition_call, self.quit_game, user_data={"tipo": "Aluno", "id": self.id_aluno}))
 
     
 

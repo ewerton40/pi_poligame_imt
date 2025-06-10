@@ -46,25 +46,29 @@ class TelaEscolha(Tela):
         self.voltar.draw(self.screen)
         if self.voltar.check_button():
             from Telas.TelaInicio import TelaInicio
-            self.transition_call(TelaInicio(self.screen, self.transition_call, self.quit_game))
+            user_data = None
+            if self.id_aluno is not None:
+                user_data = {"tipo": "Aluno", "id": self.id_aluno}
+            self.transition_call(TelaInicio(self.screen, self.transition_call, self.quit_game, user_data=user_data))
+    
 
         self.portugues.draw(self.screen)
         if not self.create_partida and self.portugues.check_button():
             self.create_partida = True
             self.id_materia = 1 
             id_partida = DATABASE.criar_partida(self.id_aluno, self.id_materia)
-            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida))
+            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida, id_aluno=self.id_aluno))
 
         self.quimica.draw(self.screen)
         if not self.create_partida and self.quimica.check_button():
             self.create_partida = True
             self.id_materia = 2
             id_partida = DATABASE.criar_partida(self.id_aluno, self.id_materia)   
-            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida))    
+            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida, id_aluno=self.id_aluno))    
 
         self.fisica.draw(self.screen)
         if not self.create_partida and self.fisica.check_button():
             self.create_partida = True
             self.id_materia = 3
             id_partida = DATABASE.criar_partida(self.id_aluno, self.id_materia)   
-            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida))                
+            self.transition_call(TelaPergunta(self.screen, self.transition_call, self.id_materia, self.quit_game, id_partida=id_partida, id_aluno=self.id_aluno))                
